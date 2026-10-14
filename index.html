@@ -140,7 +140,7 @@ function newMatch(a,b,h0,h1,demo){match={t:[a,b],human:[h0,h1],score:[0,0],sets:
 const isHum=t=>!!(match&&match.human[t]&&!match.demo);
 const DIFFN=['쉬움','보통','어려움'],DIFFC=['#60e080','#ffe040','#ff6060'];let diff=1;try{const v=+localStorage.getItem('sv91w-diff');if(v>=0&&v<=2&&localStorage.getItem('sv91w-diff')!==null)diff=v;}catch(x){}
 function saveDiff(){try{localStorage.setItem('sv91w-diff',diff);}catch(x){}}
-const DK=()=>[{spd:0.85,err:1.5,blk:-0.12,spk:-0.15,pow:-0.12,dig:-0.1,bskip:0.65,q:[0.35,0.8],sw:28,bump:5,gp:180},{spd:1,err:1,blk:0,spk:0,pow:0,dig:0,bskip:0.45,q:[0.45,1],sw:22,bump:0,gp:140},{spd:1.15,err:0.6,blk:0.12,spk:0.12,pow:0.15,dig:0.1,bskip:0.25,q:[0.6,1],sw:17,bump:-4,gp:100}][diff];
+const DK=()=>[{spd:0.85,err:1.5,blk:-0.12,spk:-0.15,pow:-0.12,dig:-0.1,bskip:0.65,q:[0.35,0.8],sw:26,bump:5,gp:200,gs:1,ga:0.05,gj:0.1,zl:0.80,zp:0.04,nf:0.2},{spd:1,err:1,blk:0,spk:0,pow:0,dig:0,bskip:0.45,q:[0.45,1],sw:16,bump:0,gp:100,gs:1,ga:0.10,gj:0.25,zl:0.88,zp:0.025,nf:0.35},{spd:1.15,err:0.6,blk:0.12,spk:0.12,pow:0.15,dig:0.1,bskip:0.25,q:[0.6,1],sw:11,bump:-4,gp:64,gs:1,ga:0.16,gj:0.4,zl:0.93,zp:0.015,nf:0.5}][diff];
 function diffFor(t){const r=diffFor0(t);if(!r)return r;const k=DK(),c=v=>Math.max(0,Math.min(1,v));return{spd:r.spd*k.spd,err:r.err*k.err,reach:r.reach,block:c(r.block+k.blk),spike:c(r.spike+k.spk),dig:c(r.dig+k.dig),power:c(r.power+k.pow)};}
 function diffFor0(t){if(!isHum(t)&&isHum(1-t)){const s=stage;return{spd:0.85+s*0.06,err:26-s*4,reach:16+s,block:0.2+s*0.09,spike:0.6+s*0.08,dig:0.35+s*0.07,power:0.15+s*0.12};}
  return{spd:1,err:10,reach:20,block:0.5,spike:0.92,dig:0.42,power:0.35};}
@@ -244,8 +244,10 @@ function ballLive(t){Object.assign(ball,{live:true,toss:false,held:null,lastTeam
 function toss(p,kind){serv.phase='toss';serv.t=0;serv.kind=kind;p.serveKind=kind;ball.held=null;ball.toss=true;ball.x=p.x+p.dir*5;ball.h=40;ball.vh=kind==='spike'?5.3:4.4;ball.vx=0;act(p,'toss',14);sfx('toss');
  if(kind==='spike')sayIt(`${p.name}, 스파이크 서브!`);}
 function serveHit(p,type){const t=p.team,o=-sgnT(t),q=clamp(1-Math.abs(ball.h-92)/50,0,1);ballLive(t);
- if(serv.kind==='spike'){const pw=serv.pw;if(pw>1.0){fastShot(o*rnd(300,330),9,true);ball.spiked=1;sayIt('오버 차지! 아웃 위험!');}
-  else{const d=clamp(110+pw*130+(type>0?30:type<0?-30:0),95,262);fastShot(o*d,5.2+pw*4.2,true);ball.spiked=1;}
+ if(serv.kind==='spike'){const pw=serv.pw,z=gaugeZone(pw),k=DK();serv.zone=z;if(z==='over'){fastShot(o*rnd(300,330),9,true);ball.spiked=1;sayIt('오버 차지! 아웃!');}
+  else if(z==='perfect'){const d=clamp(200+(type>0?40:type<0?-40:0),150,255);fastShot(o*d,10.2,true);ball.spiked=1;sayIt('퍼펙트 서브!!');hitFx(true,'#ffffff');slowmo=Math.max(slowmo,24);cam.shake=Math.max(cam.shake,10);}
+  else if(z==='sweet'){const d=clamp(110+pw*130+(type>0?30:type<0?-30:0),95,262);fastShot(o*d,5.2+pw*4.2,true);ball.spiked=1;}
+  else{const miss=(k.zl-pw)/k.zl;if(Math.random()<k.nf+miss*0.6){fastShot(o*rnd(20,40),7,false);ball.vh=Math.min(ball.vh,0.4);sayIt('서브가 네트에 걸렸다!');}else{const d=clamp(100+pw*80,95,200);fastShot(o*d,4.2+pw*2,true);sayIt('약한 서브…');}}
   act(p,'serveU',16);sfx('spike');hitFx(true,'#ffe14a');cam.shake=Math.max(cam.shake,5);popup=null;serv=null;return;}
  if(ball.h<36||q<0.12)launchPeak(o*20,NETH-16);
  else if(type>0)launchPeak(o*rnd(150,250),165);
@@ -253,12 +255,16 @@ function serveHit(p,type){const t=p.team,o=-sgnT(t),q=clamp(1-Math.abs(ball.h-92
  else launchPeak(o*rnd(110,240),112+(1-q)*10);
  act(p,'serveU',16);sfx('bump');hitFx(false,'#ffe14a');popup=null;serv=null;}
 function gaugeVal(t){const P=DK().gp,c=t%P;return(c<P/2?c:P-c)/(P/2)*1.2;}
+function gaugeStep(){const k=DK();if(serv.gv===undefined){serv.gv=0;serv.gd=1;serv.gn=0;serv.gsp=1;}
+ const base=2.4/k.gp;serv.gv+=serv.gd*base*serv.gsp*(1+k.ga*serv.gn);
+ if(serv.gv>=1.2){serv.gv=1.2;serv.gd=-1;serv.gn++;serv.gsp=1+(Math.random()*2-1)*k.gj;}else if(serv.gv<=0){serv.gv=0;serv.gd=1;serv.gn++;serv.gsp=1+(Math.random()*2-1)*k.gj;}return serv.gv;}
+function gaugeZone(pw){const k=DK();return pw>1?'over':pw>=1-k.zp?'perfect':pw>=k.zl?'sweet':'weak';}
 function updateServe(){const p=serv.p,t=p.team,hum=isHum(t),c=hum?ctlFor(t):null;serv.t++;
  if(serv.phase==='count'){ball.x=p.x+p.dir*6;ball.h=34+Math.sin(serv.t*0.15)*1.5;
   if(hum){if(serv.t%60===0){serv.cnt--;if(serv.cnt>=0)sfx2('tick');}
    if(c.bP){serv.phase='charge';serv.ht=0;return;}if(serv.cnt<0)fault(t,'서브 시간 초과!');}
-  else if(serv.t>serv.wait){const D=diffFor(t);if(Math.random()<0.25+D.power*0.6){serv.pw=Math.random()<0.06?1.1:rnd(0.55,0.98);serv.type=0;toss(p,'spike');}else{serv.type=Math.random()<0.3?1:Math.random()<0.4?-1:0;toss(p,'normal');}}}
- else if(serv.phase==='charge'){ball.x=p.x+p.dir*6;serv.ht++;serv.pw=serv.ht<10?0:gaugeVal(serv.ht-10);
+  else if(serv.t>serv.wait){const D=diffFor(t);if(Math.random()<0.25+D.power*0.6){{const k=DK(),r=Math.random();serv.pw=r<0.06?1.1:r<0.1+D.power*0.25?rnd(1-k.zp,1):r<0.55+D.power*0.3?rnd(k.zl,1):rnd(0.5,k.zl);}serv.type=0;toss(p,'spike');}else{serv.type=Math.random()<0.3?1:Math.random()<0.4?-1:0;toss(p,'normal');}}}
+ else if(serv.phase==='charge'){ball.x=p.x+p.dir*6;serv.ht++;serv.pw=serv.ht<10?0:gaugeStep();
   if(!c.b){if(serv.ht<10)toss(p,'normal');else toss(p,'spike');}}
  else if(serv.phase==='toss'){
   if(serv.kind==='spike'){if(serv.t===14)jump(p,0);if(ball.vh<0&&ball.h<(hum?108:104))serveHit(p,hum?(c.u?1:c.d?-1:0):serv.type);}
@@ -273,7 +279,7 @@ function aiAttack(a,t,D){const s=sgnT(t),pl=plan[t],peak=a.jv*a.jv/(2*G),hitH=54
   else moveTo(a,P.t>tUp+18?wx-s*16:wx,D.spd*1.2);}
  else if(a.h>0){if(!hum){if(spikeReach(a,20))spike(a,pick([-1,0,0,1]),rnd(...DK().q),false);}
   else if(a.swing>0&&spikeReach(a,DK().sw)){const c=ctlFor(t),tw=s<0?c.r:c.l,aw=s<0?c.l:c.r,ax=tw||c.u?1:aw||c.d?-1:0;
-   spike(a,ax,clamp(1-Math.abs(ball.h-(a.h+54))/DK().sw,0,1)*0.6+(Math.abs(a.vh)<1.2?0.4:0.15),true);a.swing=0;}}}
+   {const dh=Math.abs(ball.h-(a.h+54)),sw=DK().sw;let q=clamp(1-dh/sw,0,1)*0.6+(Math.abs(a.vh)<1.2?0.4:0.15);if(dh<sw*0.15&&Math.abs(a.vh)<1.2){q=1.25;hitFx(true,'#ffffff');slowmo=Math.max(slowmo,20);}spike(a,ax,q,true);if(q>=1.25)sayIt('퍼펙트 스파이크!! '+a.name+'.');}a.swing=0;}}}
 function teamAI(t){const s=sgnT(t),arr=rot[t],pl=plan[t],D=diffFor(t),ai=p=>!(isHum(t)&&ctrlP[t]===p);
  if(serv){arr.forEach((p,i)=>{if(p!==serv.p&&ai(p))moveTo(p,s*(serv.p.team===t?HOMEX:RECVX)[i],0.9);});return;}
  if(!ball.live)return;const mt=myTouch(t);
@@ -737,11 +743,11 @@ function drawServeGauge(){const gx=W/2-260,gy=470,gw=520,gh=26,pw=serv.phase==='
  const Z=v=>gx+v/1.2*gw,zs=0.12;
  M.fillStyle='#2e9a54';M.fillRect(gx,gy,Z(zs)-gx,gh);
  const gr=M.createLinearGradient(Z(zs),0,Z(1),0);gr.addColorStop(0,'#f0c020');gr.addColorStop(1,'#f05a12');M.fillStyle=gr;M.fillRect(Z(zs),gy,Z(1)-Z(zs),gh);
- M.fillStyle=frame%16<8?'#e01818':'#a00e0e';M.fillRect(Z(1),gy,Z(1.2)-Z(1),gh);
+ M.fillStyle=frame%16<8?'#e01818':'#a00e0e';M.fillRect(Z(1),gy,Z(1.2)-Z(1),gh);{const k=DK();M.fillStyle='rgba(60,60,60,0.55)';M.fillRect(Z(zs),gy,Z(k.zl)-Z(zs),gh);M.fillStyle='#30e070';M.fillRect(Z(k.zl),gy,Z(1-k.zp)-Z(k.zl),gh);M.fillStyle=frame%8<4?'#ffffff':'#ffe860';M.fillRect(Z(1-k.zp),gy,Math.max(2,Z(1)-Z(1-k.zp)),gh);}
  M.strokeStyle='#000';M.lineWidth=2;M.strokeRect(gx,gy,gw,gh);
  txt('일반 서브',gx+2,gy+gh+20,'#8fe0a8',18);txt('스파이크 서브 (파워 ▶)',Z(0.55),gy+gh+20,'#ffc060',18,'center');txt('OUT',Z(1.1),gy+gh+20,'#ff6060',18,'center');
  if(serv.phase==='charge'&&serv.ht>=10){const mx=Z(Math.min(1.2,pw));M.fillStyle='#fff';M.fillRect(mx-3,gy-8,6,gh+16);M.fillStyle='#000';M.fillRect(mx-1,gy-6,2,gh+12);
-  txt(pw>1?'오버 차지!':'파워 '+Math.round(pw*100)+'%',mx,gy-20,pw>1?'#ff6060':'#fff',18,'center');}
+  {const z=gaugeZone(pw);txt(z==='over'?'오버 차지!':z==='perfect'?'PERFECT!':z==='sweet'?'GOOD '+Math.round(pw*100)+'%':'약함 '+Math.round(pw*100)+'%',mx,gy-20,z==='over'?'#ff6060':z==='perfect'?'#ffe860':z==='sweet'?'#60f090':'#c0c0c0',18,'center');}}
  else txt(serv.phase==='charge'?'…':'',gx+gw/2,gy-20,'#fff',18,'center');
  txt('짧게 누르기 = 일반 서브 · 길게 누르고 떼기 = 스파이크 서브 · ↑↓ 궤도',W/2,gy+gh+48,'#fff',17,'center');}
 function hudPlay(){const m=match;if(!m)return;
@@ -862,13 +868,13 @@ function netEnd(){netSend({t:'bye'});setTimeout(()=>{netClose();},300);NET.playi
 function netStart(){gm='exh';twoP=true;stage=2;NET.playing=true;netSend({t:'start',a:selA,b:selB});mode='overview';timer=0;}
 const NET_REPL=(k,v)=>(v&&typeof v==='object'&&v.T&&typeof v.T==='object'&&v.team!==undefined)?{__p:players.indexOf(v)}:v;
 function netSnap(){const P=JSON.stringify(players.map(p=>Object.assign({},p,{T:p.T.id})),NET_REPL);
- const R=JSON.stringify({mode,timer,match,ball,rot,plan,ctrlP,serv,cam,cutCur,say,popup,hype,slowmo,netShake,refWhistle,rallyEnd,stats,selA,selB,coach:{react:COACH.react,rt:COACH.rt},parts:parts.slice(-50),ev:NET.ev.splice(0)},NET_REPL);
+ const R=JSON.stringify({mode,timer,match,ball,rot,plan,ctrlP,serv,cam,cutCur,say,popup,hype,slowmo,netShake,refWhistle,rallyEnd,stats,selA,selB,diff,coach:{react:COACH.react,rt:COACH.rt},parts:parts.slice(-50),ev:NET.ev.splice(0)},NET_REPL);
  netSend({t:'s',P,R});}
 function netApply(d){const old=players,ps=JSON.parse(d.P).map(q=>Object.assign(q,{T:TEAMS.find(t=>t.id===q.T)||TEAMS[0]}));
  ps.forEach((q,i)=>{q._tx=q.x;q._th=q.h;const o=old[i];if(o&&o.T===q.T&&o.idx===q.idx){q.x=o.x;q.h=o.h;}});players=ps;
  const R=JSON.parse(d.R,(k,v)=>(v&&typeof v==='object'&&v.__p!==undefined)?(players[v.__p]||null):v);
  const bx=ball.x,bh=ball.h;mode=R.mode;timer=R.timer;match=R.match;Object.assign(ball,R.ball);ball._tx=ball.x;ball._th=ball.h;if(Math.abs(bx-ball.x)<40){ball.x=bx;ball.h=bh;}
- rot=R.rot;plan=R.plan;ctrlP=R.ctrlP;serv=R.serv;Object.assign(cam,R.cam);cutCur=R.cutCur;say=R.say;popup=R.popup;hype=R.hype;slowmo=R.slowmo;netShake=R.netShake;refWhistle=R.refWhistle;rallyEnd=R.rallyEnd;Object.assign(stats,R.stats);selA=R.selA;selB=R.selB;
+ rot=R.rot;plan=R.plan;ctrlP=R.ctrlP;serv=R.serv;Object.assign(cam,R.cam);cutCur=R.cutCur;say=R.say;popup=R.popup;hype=R.hype;slowmo=R.slowmo;netShake=R.netShake;refWhistle=R.refWhistle;rallyEnd=R.rallyEnd;Object.assign(stats,R.stats);selA=R.selA;selB=R.selB;if(R.diff!==undefined)diff=R.diff;
  COACH.react=R.coach.react;COACH.rt=R.coach.rt;parts=R.parts;(R.ev||[]).forEach(e=>{const f=NET_AUD[e[0]];if(f)f(...e.slice(1));});}
 function netRx(d){if(!d||!d.t)return;
  if(d.t==='pick'){if(NET.role==='host'){selB=d.team;NET.ready[1]=d.ready;}else{selA=d.team;NET.ready[0]=d.ready;}}
