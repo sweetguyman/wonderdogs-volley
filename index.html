@@ -67,7 +67,7 @@ const PROLOGUE=[
 let proI=0,proL=0;
 // ===== INPUT =====
 const keys={},latch={},rel={};const nk=k=>k.length===1?k.toLowerCase():k;
-addEventListener('keydown',e=>{const k=nk(e.key);if(/^Arrow/.test(e.key)||e.key===' ')e.preventDefault();if(!keys[k])latch[k]=1;keys[k]=1;audioInit();});
+addEventListener('keydown',e=>{const k=nk(e.key);if(/^Arrow/.test(e.key)||e.key===' ')e.preventDefault();audioInit();if(!keys[k])latch[k]=1;keys[k]=1;});
 addEventListener('keyup',e=>{const k=nk(e.key);keys[k]=0;rel[k]=1;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=0;});
 let twoP=false,gm='story',selA=0,selB=1,pickRow=0,pick1P=true,storyLine=0;const PL=t=>(typeof match!=='undefined'&&match&&match.ctl)?match.ctl[t]:t;
@@ -80,29 +80,41 @@ if('ontouchstart' in window||navigator.maxTouchPoints>0){document.getElementById
 document.querySelectorAll('button[data-k]').forEach(b=>{const k=b.dataset.k;
  b.addEventListener('pointerdown',e=>{e.preventDefault();if(!keys[k])latch[k]=1;keys[k]=1;audioInit();});
  ['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,()=>{if(keys[k]){keys[k]=0;rel[k]=1;}}));});
-cv.addEventListener('pointerdown',()=>{audioInit();if(mode!=='play')latch.Enter=1;});
+cv.addEventListener('pointerdown',()=>{const locked=!AC||AC.state!=='running';audioInit();if(locked&&mode==='title')return;if(mode!=='play')latch.Enter=1;});
+addEventListener('touchstart',()=>audioInit(),{passive:true});
 let AC=null,master,musicG,sfxG,noiseBuf,musicOn=true,refWhistle=0;
-function audioInit(){if(AC){if(AC.state==='suspended')AC.resume();return;}try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+function audioInit(){if(AC){if(AC.state==='suspended')AC.resume();return;}if(!AC&&curSong===null)curSong='title';try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
  master=AC.createGain();master.gain.value=0.5;master.connect(AC.destination);musicG=AC.createGain();musicG.gain.value=musicOn?0.33:0;musicG.connect(master);sfxG=AC.createGain();sfxG.gain.value=0.8;sfxG.connect(master);
  noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
  nextT=AC.currentTime+0.05;setInterval(sched,25);}
 function tone(f,dur,type='square',vol=0.2,when=0,dest=sfxG,slide=0){if(!AC)return;const t=AC.currentTime+Math.max(0,when);const o=AC.createOscillator(),gn=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,slide),t+dur);gn.gain.setValueAtTime(vol,t);gn.gain.exponentialRampToValueAtTime(0.001,t+dur);o.connect(gn).connect(dest);o.start(t);o.stop(t+dur+0.02);}
 function noise(dur,vol=0.2,freq=1000,when=0,dest=sfxG,q=1){if(!AC)return;const t=AC.currentTime+Math.max(0,when);const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;const gn=AC.createGain();gn.gain.setValueAtTime(vol,t);gn.gain.exponentialRampToValueAtTime(0.001,t+dur);s.connect(f).connect(gn).connect(dest);s.start(t);s.stop(t+dur+0.02);}
-const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-const mf=n=>{const m=/([A-G])(#?)(\d)/.exec(n);return 440*Math.pow(2,((+m[3]+1)*12+NOTE[m[1]]+(m[2]?1:0)-69)/12);};
-function parse(s){const tk=s.replace(/\|/g,' ').trim().split(/\s+/),out=[];for(let i=0;i<tk.length;i++){if(tk[i]==='-'||tk[i]==='.'){out.push(null);continue;}let d=1;while(tk[i+d]==='-')d++;out.push({n:tk[i],d});}return out;}
+// ===== ORIGINAL PROCEDURAL MUSIC (generated in code; seeded so each theme is stable) =====
+function mkRng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+const midiF=m=>440*Math.pow(2,(m-69)/12);
+function compose(o){const R=mkRng(o.seed),scale=o.scale,root=o.root,deg=d=>{const n=scale.length,oc=Math.floor(d/n);return root+scale[((d%n)+n)%n]+12*oc;};
+ const lead=[],bass=[],arp=[],bars=o.prog.length*2;let cur=7;
+ const rhy=[[1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,1],[1,0,0,1,0,0,1,0,1,0,1,1,1,0,1,0],[1,1,0,1,0,1,1,0,1,0,0,1,0,1,1,0],[1,0,1,1,1,0,1,0,1,1,0,1,1,0,0,0]];
+ for(let b=0;b<bars;b++){const ch=o.prog[b%o.prog.length],tones=[ch,ch+2,ch+4],r=rhy[(b+(b>=o.prog.length?1:0))%rhy.length],last=b%4===3;
+  for(let i=0;i<16;i++){
+   if(r[i]&&!(last&&i>12)){const strong=i%4===0;let target;if(strong){const opts=tones.map(t=>t+7*Math.round((cur-t)/7));target=opts.reduce((a,c)=>Math.abs(c-cur)<Math.abs(a-cur)?c:a);}else target=cur+(R()<0.5?1:-1)*(R()<0.75?1:2);
+    target=Math.max(4,Math.min(13,target));cur=target;let d=1;while(i+d<16&&!r[i+d]&&d<3)d++;if(last&&i===12)d=4;lead.push({f:midiF(deg(cur)+12),d});}
+   else lead.push(null);
+   const bn=deg(ch)-12,bp=o.bassPat[i];bass.push(bp?{f:midiF(bn+(bp===2?12:0)),d:1}:null);
+   arp.push({f:midiF(deg(tones[i%3])+(i%6<3?0:12)),d:1});}}
+ return{bpm:o.bpm,lead,bass,arp,drum:o.drum};}
 const SONGS={
- game:{bpm:150,lead:parse('A4 - C5 - E5 - A5 - G5 - E5 - D5 - E5 - | F5 - E5 - D5 - C5 - D5 - B4 - G4 - B4 - | A4 - C5 - E5 - A5 - B5 - A5 - G5 - E5 - | F5 - G5 - A5 - G5 - E5 - D5 - E5 - - -'),
-  bass:parse('A2 . A3 . A2 . A3 . A2 . A3 . A2 . A3 . | F2 . F3 . F2 . F3 . G2 . G3 . G2 . G3 . | A2 . A3 . A2 . A3 . A2 . A3 . A2 . A3 . | F2 . F3 . G2 . G3 . E2 . E3 . E2 . E3 .')},
- title:{bpm:128,lead:parse('C5 - E5 - G5 - C6 - B5 - G5 - E5 - G5 - | A5 - - - G5 - E5 - F5 - - - E5 - D5 - | C5 - E5 - G5 - C6 - D6 - C6 - B5 - G5 - | A5 - B5 - C6 - - - G5 - - - - - - -'),
-  bass:parse('C3 . C3 . G2 . G2 . C3 . C3 . G2 . G2 . | F2 . F2 . C3 . C3 . F2 . F2 . G2 . G2 . | C3 . C3 . G2 . G2 . C3 . C3 . E3 . E3 . | F2 . F2 . G2 . G2 . C3 . . . . . . .')}};
+ title:compose({seed:20261014,bpm:132,root:62,scale:[0,2,4,5,7,9,11],prog:[0,5,3,4],bassPat:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,2,0],drum:'title'}),
+ game:compose({seed:91919,bpm:158,root:64,scale:[0,2,3,5,7,8,10],prog:[0,5,2,6],bassPat:[1,0,2,0,1,0,2,0,1,0,2,0,1,0,2,1],drum:'game'})};
 let curSong=null,step=0,nextT=0;
 function playSong(n){if(curSong===n)return;curSong=n;step=0;if(AC)nextT=AC.currentTime+0.05;}
-function sched(){if(!AC||!curSong)return;const s=SONGS[curSong],dt=60/s.bpm/4;if(nextT<AC.currentTime)nextT=AC.currentTime+0.05;
- while(nextT<AC.currentTime+0.12){const i=step%s.lead.length,w=nextT-AC.currentTime,L=s.lead[i],B=s.bass[i%s.bass.length],ds=i%16;
-  if(L){tone(mf(L.n),L.d*dt*0.92,'square',0.06,w,musicG);tone(mf(L.n)*1.005,L.d*dt*0.9,'square',0.025,w+0.012,musicG);}
-  if(B)tone(mf(B.n),B.d*dt*0.9,'triangle',0.2,w,musicG);
-  if(ds%8===0)tone(160,0.12,'sine',0.4,w,musicG,40);if(ds%8===4)noise(0.1,0.16,1800,w,musicG);if(ds%2===0)noise(0.03,0.05,7000,w,musicG,0.7);
+function sched(){if(!AC||!curSong||AC.state!=='running')return;const s=SONGS[curSong],dt=60/s.bpm/4;if(nextT<AC.currentTime)nextT=AC.currentTime+0.05;
+ while(nextT<AC.currentTime+0.12){const i=step%s.lead.length,w=nextT-AC.currentTime,L=s.lead[i],B=s.bass[i],A=s.arp[i],ds=i%16;
+  if(L){tone(L.f,L.d*dt*0.9,'square',0.055,w,musicG);tone(L.f*2,L.d*dt*0.5,'triangle',0.02,w,musicG);}
+  if(B)tone(B.f,dt*0.85,'triangle',0.22,w,musicG);
+  if(A)tone(A.f,dt*0.5,'square',0.014,w,musicG);
+  if(s.drum==='game'){if(ds%4===0)tone(150,0.11,'sine',0.42,w,musicG,40);if(ds%8===4)noise(0.1,0.18,1800,w,musicG);if(ds%2===1)noise(0.025,0.05,8000,w,musicG,0.7);if(ds===14)noise(0.06,0.1,2400,w,musicG);}
+  else{if(ds%8===0)tone(150,0.12,'sine',0.38,w,musicG,40);if(ds%8===4)noise(0.09,0.14,1700,w,musicG);if(ds%4===2)noise(0.03,0.05,7500,w,musicG,0.7);}
   nextT+=dt;step++;}}
 function sfx(n){if(!AC)return;switch(n){
  case 'bump':tone(330,0.08,'triangle',0.35,0,sfxG,180);noise(0.05,0.2,900);break;
@@ -163,7 +175,7 @@ function predict(hT){let x=ball.x,h=ball.h,vx=ball.vx,vh=ball.vh;for(let i=0;i<3
 function myTouch(t){if(!ball.live)return-1;return ball.lastTeam===t?ball.touches:0;}
 function comingTo(t){return ball.live&&(side(ball.x)===t||(side(P0.x)===t&&ball.lastTeam!==t));}
 // ===== RULES =====
-function touchReg(p){if(ball.lastTeam!==p.team){ball.lastTeam=p.team;ball.touches=0;ball.lastP=null;}
+function touchReg(p){if(ball.srv&&p.team===ball.serveTeam)return false;if(ball.lastTeam!==p.team){ball.lastTeam=p.team;ball.touches=0;ball.lastP=null;}
  if(ball.lastP===p){fault(p.team,'더블 컨택!');return false;}
  ball.touches++;ball.lastP=p;ball.blocker=null;ball.btouch=false;if(ball.touches>3){fault(p.team,'포 히트!');return false;}
  if(p.team!==ball.serveTeam)ball.recvTouched=true;stats.cur++;if(stats.cur===8&&wdSideOf()>=0&&!cutCur&&!cutQ.length){cutin('coach','goodplay',{d:70,label:'감독 김연경',line:'긴 랠리! 끝까지!'});coachReact('clap');}return true;}
@@ -242,7 +254,7 @@ function checkBlock(p){if(!ball.live||p.h<6||ball.lastTeam===p.team)return;const
  else{ball.x=-s*4;ball.vx=-s*rnd(1.2,2.4);ball.vh=-rnd(0.5,1.5);ball.blocker=p;sayIt(`블로킹! ${p.name}.`);slowmo=Math.max(slowmo,24);}
  act(p,'block',14);sfx('block');hitFx(true,'#9cf');cam.shake=10;hype=60;}
 // ===== SERVE =====
-function ballLive(t){Object.assign(ball,{live:true,toss:false,held:null,lastTeam:t,touches:0,lastP:serv?serv.p:null,spiked:0,serveTeam:t});}
+function ballLive(t){Object.assign(ball,{live:true,toss:false,held:null,lastTeam:t,touches:0,lastP:serv?serv.p:null,spiked:0,serveTeam:t,srv:true});}
 function toss(p,kind){serv.phase='toss';serv.t=0;serv.kind=kind;p.serveKind=kind;ball.held=null;ball.toss=true;ball.x=p.x+p.dir*5;ball.h=40;ball.vh=kind==='spike'?5.3:4.4;ball.vx=0;act(p,'toss',14);sfx('toss');
  if(kind==='spike')sayIt(`${p.name}, 스파이크 서브!`);}
 function serveHit(p,type){const t=p.team,o=-sgnT(t),q=clamp(1-Math.abs(ball.h-92)/50,0,1);ballLive(t);
@@ -324,7 +336,8 @@ function physP(p){const s=sgnT(p.team);
  if(Math.abs(p.mx)>0.2&&p.state==='ground')p.runT++;p.mx*=0.5;
  if(p.act){p.act.t++;if(p.act.t>=p.act.d)p.act=null;}}
 function updateBall(){if(ball.held)return;const px=ball.x;ball.x+=ball.vx;ball.h+=ball.vh;ball.vh-=G;ball.spin+=Math.abs(ball.vx)*0.08+0.03;
- if((px<0)!==(ball.x<0)&&ball.h>0&&ball.h<NETH+2){ball.x=px<0?-3:3;ball.vx=-ball.vx*0.25;if(ball.vh>0)ball.vh*=0.3;netShake=18;sfx('net');if(ball.live)sayIt('네트!');}
+ if((px<0)!==(ball.x<0)&&ball.h>0&&ball.h<NETH+2){ball.x=px<0?-3:3;ball.vx=-ball.vx*0.25;if(ball.vh>0)ball.vh*=0.3;netShake=18;sfx('net');if(ball.live&&ball.srv&&rallyEnd===0){fault(ball.serveTeam,'서브 네트!');}else if(ball.live)sayIt('네트!');}
+ if(ball.srv&&ball.live&&side(ball.x)!==ball.serveTeam&&Math.abs(ball.x)>4)ball.srv=false;
  if(ball.h<=0){ball.h=0;if(ball.toss&&serv)fault(serv.p.team,'서브 실패!');else if(ball.live&&rallyEnd===0)judge();
   if(ball.vh<-1){sfx('floor');puff(ball.x,0,6,'#e0fff0',1);}ball.vh=Math.abs(ball.vh)*0.45;ball.vx*=0.7;if(ball.vh<0.6)ball.vh=0;}
  ball.trail.push([ball.x,ball.h]);if(ball.trail.length>10)ball.trail.shift();if(ball.spiked)ball.spiked++;}
@@ -352,9 +365,9 @@ function startStage(){if(gm==='story'){selA=0;selB=Math.min(stage+1,LAST);}newMa
 function update(){if(NET.playing&&NET.role==='guest'){netGuestTick();return;}frame++;if(cam.shake>0)cam.shake--;timer++;const ok=btnP();
  switch(mode){
  case 'title':case 'rank':attractT++;if(mode==='rank'||mode==='title')stepFx();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}
-  if(attractT>(mode==='title'?480:420))toAttract(mode==='title'?'demo':'title');break;
+  if(mode==='rank'&&attractT>600)toAttract('title');break;
  case 'demo':attractT++;sim();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}if(attractT>1800)toAttract('rank');break;
- case 'mode':if(upP()){menuSel=(menuSel+2)%3;sfx('menu');}if(dnP()){menuSel=(menuSel+1)%3;sfx('menu');}if(ok||timer>600){sfx('ok');stage=0;score=0;timer=0;if(menuSel===2){mode='online';NET.st='menu';NET.sel=0;}else if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;mode='diff';}}break;
+ case 'mode':if(upP()){menuSel=(menuSel+2)%3;sfx('menu');}if(dnP()){menuSel=(menuSel+1)%3;sfx('menu');}if(ok){sfx('ok');stage=0;score=0;timer=0;if(menuSel===2){mode='online';NET.st='menu';NET.sel=0;}else if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;mode='diff';}}break;
  case 'pick':{const nT=(v,d,o)=>{do{v=(v+d+8)%8;}while(v===o);return v;};if(upP()){pickRow=(pickRow+3)%4;sfx('menu');}if(dnP()){pickRow=(pickRow+1)%4;sfx('menu');}
   if(lfP()||rtP()){const d=lfP()?-1:1;sfx('menu');if(pickRow===0)selA=nT(selA,d,selB);else if(pickRow===1)selB=nT(selB,d,selA);else if(pickRow===2)diff=(diff+3+d)%3;}
   if(ok){sfx('ok');if(pickRow<3)pickRow++;else{saveDiff();twoP=false;stage=2;mode='inst';instPage=0;timer=0;}}break;}
@@ -771,6 +784,7 @@ function screens(){
   M.fillStyle='#ff3030';M.beginPath();M.arc(220,460,0,0,7);M.fill();
   if(frame%60<38)txt(credits?'PRESS START':'INSERT COIN  /  PRESS START',W/2,520,'#ffffff',30,'center','#1020a0');
   {M.fillStyle='rgba(0,0,0,0.55)';M.fillRect(0,588,W,72);M.save();M.beginPath();M.rect(0,588,W,72);M.clip();[[DISC_KO,610,0.9],[DISC_EN,640,1.1]].forEach(([t,y,sp])=>{M.font='bold 17px "Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif';const w=M.measureText(t).width+120,off=(frame*sp+W*0.9)%w;for(let x=W-off;x<W+w;x+=w)if(x>-w)txt(t,x,y,'#e8ecff',17,'left','#000');});M.restore();}
+  if(!AC||AC.state!=='running'){if(frame%60<45)txt('🔊 클릭/아무 키나 눌러 사운드 켜기',W/2,566,'#ffffff',18,'center','#000');}
   txt('© 2026 FAN-MADE ARCADE TRIBUTE · INSPIRED BY SUPER VOLLEY \'91',W/2,700,'#ffe040',18,'center');txt('CREDIT: '+credits,W-40,740,'#fff',18,'right');}
  else if(mode==='rank'){blueBG();big('SCORE RANKING',W/2,90,64,'#ffffff','#ffe040');
   RANK.forEach((r,i)=>{const y=180+i*62,c=i===newRank&&frame%30<20?'#ff6060':'#ffffff';txt((i+1)+(['ST','ND','RD'][i]||'TH'),180,y,'#ffe040',34);txt(String(r.s).padStart(8,' '),520,y,c,34,'right');txt(r.st>=8?'ALL CLEAR':(ORD[r.st-1]||'1ST')+' MATCH',570,y,c,28);txt(r.n,880,y,c,30);});}
@@ -778,7 +792,7 @@ function screens(){
  else if(mode==='netmsg'){blueBG();M.fillStyle='rgba(0,0,0,0.6)';M.fillRect(140,260,744,220);big('연결 종료',W/2,320,52,'#ffffff','#ff9090');txt(NET.msg,W/2,400,'#fff',26,'center');txt('잠시 후 메뉴로 돌아갑니다',W/2,450,'#c8d0f0',18,'center');}
  else if(mode==='mode'){blueBG();txt('게임을 선택해 주세요',W/2,110,'#fff',34,'center');
   ['스토리 모드','팀 선택 경기','온라인 대전'].forEach((s,i)=>{const y=230+i*120,sel=menuSel===i;if(sel){M.fillStyle='#fff';M.beginPath();M.arc(310,y,26,0,7);M.fill();M.fillStyle='#e02020';M.fillRect(296,y-4,28,8);}big(s,560,y,72,sel?'#ffffff':'#8a9ad8',sel?'#ffe040':'#5a6ab8');});
-  txt('TIME '+Math.max(0,10-Math.floor(timer/60)),W/2,600,'#fff',32,'center');txt('원더독스 · WONDER DOGS',W/2,660,'#ffe040',22,'center');txt('CREDIT: 1',W-40,740,'#fff',18,'right');}
+  txt('원더독스 · WONDER DOGS',W/2,660,'#ffe040',22,'center');txt('CREDIT: 1',W-40,740,'#fff',18,'right');}
  else if(mode==='pick2p'){blueBG();txt('2P 팀을 선택해 주세요 (←→)',W/2,110,'#fff',32,'center');const T=TEAMS[p2team];drawFlag('WDG',220,250,200,170);drawFlag(T.id,620,260,170,150);big('VS',W/2,327,60,'#fff','#ffe040');
   txt('WONDER DOGS (1P)',320,450,'#fff',30,'center');txt(T.name+' (2P)',704,440,'#fff',30,'center');txt('TIME '+Math.max(0,10-Math.floor(timer/60)),W/2,600,'#fff',32,'center');}
  else if(mode==='inst'){blueBG();txt('조작 설명',W/2,70,'#fff',36,'center');
