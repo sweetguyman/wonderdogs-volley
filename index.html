@@ -224,7 +224,8 @@ function newSet(){const m=match,st={};players.forEach(p=>st[p.T.id+'|'+p.num]=p.
  ctrlP=[null,null];parts=[];popup=null;slowmo=0;sayIt(`${m.setNo}세트 시작! 코트 체인지.`);setupServe();}
 // ===== ACTIONS =====
 function pickReceiver(t,x){let best=null,bd=1e9;rot[t].forEach((p,i)=>{if(p.h>0||i===2)return;const d=Math.abs(p.x-x)+((i===1||i===3)?30:0);if(d<bd){bd=d;best=p;}});return best||rot[t][0];}
-function canBump(p,R){return ball.live&&p.h===0&&p.state==='ground'&&side(ball.x)===p.team&&ball.h<44&&ball.h>1&&ball.vh<1&&Math.abs(ball.x-(p.x+p.dir*3))<R;}
+function srvLock(t){return ball.srv&&ball.live&&t===ball.serveTeam;}
+function canBump(p,R){return ball.live&&!srvLock(p.team)&&p.h===0&&p.state==='ground'&&side(ball.x)===p.team&&ball.h<44&&ball.h>1&&ball.vh<1&&Math.abs(ball.x-(p.x+p.dir*3))<R;}
 function puff(x,h,n,col,sp=1,type='dust'){for(let i=0;i<n;i++)parts.push({x,h,vx:rnd(-1,1)*sp,vh:rnd(0.2,1.2)*sp,life:rnd(16,30)|0,max:30,col,type,sz:rnd(1.5,3)});}
 function hitFx(big,col){parts.push({x:ball.x,h:ball.h,type:'ring',life:14,max:14,col,big});puff(ball.x,ball.h,big?16:6,col,big?2.2:1.1,'spark');}
 function pass(p,err,weak){if(!touchReg(p))return;const t=p.team,s=sgnT(t),mt=ball.touches,pl=plan[t],arr=rot[t],e=()=>rnd(-err,err);
@@ -247,7 +248,7 @@ function spike(p,ax,q,human){if(!touchReg(p))return;const t=p.team,o=-sgnT(t);st
  act(p,'spike',16);sfx('spike');hitFx(true,'#ffe14a');cam.shake=Math.max(cam.shake,8);hype=Math.max(hype,40);
  sayIt(`${plan[t].quick?'시간차 스파이크!':'스파이크!'} ${p.name}.`);
  if(q>0.7&&(human||Math.random()<0.3))slowmo=36;}
-function checkBlock(p){if(!ball.live||p.h<6||ball.lastTeam===p.team)return;const s=sgnT(p.team);
+function checkBlock(p){if(!ball.live||ball.srv||p.h<6||ball.lastTeam===p.team)return;const s=sgnT(p.team);
  if(s*p.x>26||ball.vx*s<=0)return;if(Math.abs(ball.x)>12||Math.abs(ball.h-(p.h+52))>15||ball.bchk)return;ball.bchk=true;if(Math.random()<(isHum(p.team)?0.45:DK().bskip))return;
  ball.lastTeam=p.team;ball.touches=0;ball.lastP=null;ball.spiked=0;stats.blocks++;
  if(Math.random()<0.35){ball.btouch=true;ball.x=s*4;ball.vx=s*rnd(0.6,1.4);ball.vh=rnd(2.5,3.5);sayIt(`원터치! ${p.name}.`);}
@@ -286,7 +287,7 @@ function updateServe(){const p=serv.p,t=p.team,hum=isHum(t),c=hum?ctlFor(t):null
 // ===== AI =====
 function moveTo(p,x,mul=1){if(p.h>0||p.state!=='ground'||(p.act&&p.act.n==='land'&&p.act.t<4))return;const dx=x-p.x;if(Math.abs(dx)<1.2)return;const st=Math.min(p.spd*mul,Math.abs(dx))*Math.sign(dx);p.x+=st;p.mx=st;}
 function aiBump(p,reach,err){if(ball.spiked&&ball.lastTeam!==p.team&&!p.canDig)return;if(canBump(p,reach)&&ball.h<34){pass(p,err);return;}
- if(p.state==='ground'&&p.h===0&&ball.live&&ball.vh<0&&ball.h<13&&ball.h>2&&side(ball.x)===p.team){const d=Math.abs(ball.x-p.x);if(d>=reach&&d<reach+24&&Math.random()<0.5)dive(p);}}
+ if(p.state==='ground'&&p.h===0&&ball.live&&ball.vh<0&&ball.h<13&&ball.h>2&&side(ball.x)===p.team){const d=Math.abs(ball.x-p.x);if(d>=reach&&d<reach+24&&!srvLock(p.team)&&Math.random()<0.5)dive(p);}}
 function aiAttack(a,t,D){const s=sgnT(t),pl=plan[t],peak=a.jv*a.jv/(2*G),hitH=54+peak*0.92,hum=isHum(t);
  if(a.h===0&&a.state==='ground'){if(pl.tried)return;const P=predict(hitH),tUp=a.jv/G*0.85,wx=s<0?clamp(P.x-s*5,-200,-8):clamp(P.x-s*5,8,200);
   if(P.t<=tUp+1){jump(a,clamp((wx-a.x)/Math.max(4,P.t),-1.6,1.6));pl.tried=true;}
@@ -325,7 +326,7 @@ function humanCtl(p,c,t){const mt=myTouch(t),attacking=ball.live&&mt>=1&&side(ba
  if(!attacking&&p.state==='ground'&&p.h===0){const mx=(c.r?1:0)-(c.l?1:0);if(mx){const sp=p.spd*1.1;p.x+=mx*sp;p.mx=mx*sp;}
   if(c.bP&&ball.live&&side(ball.x)!==t&&Math.abs(p.x)<40)jump(p,0);}
  if(!attacking&&canBump(p,(ball.spiked&&ball.lastTeam!==t?15:22)+DK().bump)&&ball.h<34)pass(p,6);
- else if(!attacking&&p.state==='ground'&&p.h===0&&ball.live&&ball.vh<0&&ball.h<12&&ball.h>2&&side(ball.x)===t){const d=Math.abs(ball.x-p.x);if(d>=22&&d<42)dive(p);}
+ else if(!attacking&&p.state==='ground'&&p.h===0&&ball.live&&ball.vh<0&&ball.h<12&&ball.h>2&&side(ball.x)===t){const d=Math.abs(ball.x-p.x);if(d>=22&&d<42&&!srvLock(t))dive(p);}
  if(p.swing>0)p.swing--;}
 // ===== PHYSICS =====
 function physP(p){const s=sgnT(p.team);
@@ -338,6 +339,7 @@ function physP(p){const s=sgnT(p.team);
 function updateBall(){if(ball.held)return;const px=ball.x;ball.x+=ball.vx;ball.h+=ball.vh;ball.vh-=G;ball.spin+=Math.abs(ball.vx)*0.08+0.03;
  if((px<0)!==(ball.x<0)&&ball.h>0&&ball.h<NETH+2){ball.x=px<0?-3:3;ball.vx=-ball.vx*0.25;if(ball.vh>0)ball.vh*=0.3;netShake=18;sfx('net');if(ball.live&&ball.srv&&rallyEnd===0){fault(ball.serveTeam,'서브 네트!');}else if(ball.live)sayIt('네트!');}
  if(ball.srv&&ball.live&&side(ball.x)!==ball.serveTeam&&Math.abs(ball.x)>4)ball.srv=false;
+ if(ball.srv&&ball.live&&rallyEnd===0&&side(ball.x)===ball.serveTeam&&ball.vh<0&&ball.h<NETH)fault(ball.serveTeam,'서브 실패!');
  if(ball.h<=0){ball.h=0;if(ball.toss&&serv)fault(serv.p.team,'서브 실패!');else if(ball.live&&rallyEnd===0)judge();
   if(ball.vh<-1){sfx('floor');puff(ball.x,0,6,'#e0fff0',1);}ball.vh=Math.abs(ball.vh)*0.45;ball.vx*=0.7;if(ball.vh<0.6)ball.vh=0;}
  ball.trail.push([ball.x,ball.h]);if(ball.trail.length>10)ball.trail.shift();if(ball.spiked)ball.spiked++;}
