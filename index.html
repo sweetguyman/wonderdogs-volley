@@ -2,6 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <title>WONDER DOGS 원더독스 · 신인감독 김연경 VOLLEY ARCADE</title>
+<meta name="description" content="본 게임은 팬이 비공식으로 제작한 비영리 팬메이드 작품으로, 방송사·제작사·구단·선수 및 원작 게임 권리자와 무관합니다. 모든 상표·로고·이름의 권리는 각 권리자에게 있습니다. 어떠한 판매나 수익을 목적으로 만든 것이 아니며, 판매 및 상업적 이용을 절대 금지합니다. 권리자의 요청 등 문제가 되는 경우 즉시 삭제하겠습니다. / This is an unofficial, non-profit fan-made game, not affiliated with or endorsed by any broadcaster, production company, team, player, or the original game's rights holders. All trademarks, logos and names belong to their respective owners. It was not made for sale or profit; selling or any commercial use is strictly prohibited. It will be removed immediately upon any rights holder's request or concern.">
 <style>
 html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
@@ -12,6 +13,7 @@ canvas{image-rendering:pixelated;width:min(100vw,calc(100vh*4/3));height:min(100
 #touch button{border-radius:12px;border:2px solid #fff9;background:#0008;color:#fff;font:bold 18px monospace;touch-action:none;padding:0}
 #touch .A{width:84px;height:84px;border-radius:50%;background:#c01818cc}#touch .S{width:64px;height:40px;font-size:13px}
 </style></head><body>
+<noscript><p>본 게임은 팬이 비공식으로 제작한 비영리 팬메이드 작품으로, 방송사·제작사·구단·선수 및 원작 게임 권리자와 무관합니다. 모든 상표·로고·이름의 권리는 각 권리자에게 있습니다. 어떠한 판매나 수익을 목적으로 만든 것이 아니며, 판매 및 상업적 이용을 절대 금지합니다. 권리자의 요청 등 문제가 되는 경우 즉시 삭제하겠습니다.</p><p>This is an unofficial, non-profit fan-made game, not affiliated with or endorsed by any broadcaster, production company, team, player, or the original game&#39;s rights holders. All trademarks, logos and names belong to their respective owners. It was not made for sale or profit; selling or any commercial use is strictly prohibited. It will be removed immediately upon any rights holder&#39;s request or concern.</p></noscript>
 <div id="wrap"><canvas id="c" width="1024" height="768"></canvas></div>
 <div id="touch"><div class="pad"><button data-k="ArrowUp" style="left:52px;top:0">▲</button><button data-k="ArrowLeft" style="left:0;top:52px">◀</button><button data-k="ArrowRight" style="left:104px;top:52px">▶</button><button data-k="ArrowDown" style="left:52px;top:104px">▼</button></div>
 <div class="btns"><button class="S" data-k="Enter">START</button><button class="A" data-k="z">●</button></div></div>
@@ -768,6 +770,7 @@ function screens(){
  if(mode==='title'){blueBG();logo(255);
   M.fillStyle='#ff3030';M.beginPath();M.arc(220,460,0,0,7);M.fill();
   if(frame%60<38)txt(credits?'PRESS START':'INSERT COIN  /  PRESS START',W/2,520,'#ffffff',30,'center','#1020a0');
+  {M.fillStyle='rgba(0,0,0,0.55)';M.fillRect(0,588,W,72);M.save();M.beginPath();M.rect(0,588,W,72);M.clip();[[DISC_KO,610,0.9],[DISC_EN,640,1.1]].forEach(([t,y,sp])=>{M.font='bold 17px "Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif';const w=M.measureText(t).width+120,off=(frame*sp+W*0.9)%w;for(let x=W-off;x<W+w;x+=w)if(x>-w)txt(t,x,y,'#e8ecff',17,'left','#000');});M.restore();}
   txt('© 2026 FAN-MADE ARCADE TRIBUTE · INSPIRED BY SUPER VOLLEY \'91',W/2,700,'#ffe040',18,'center');txt('CREDIT: '+credits,W-40,740,'#fff',18,'right');}
  else if(mode==='rank'){blueBG();big('SCORE RANKING',W/2,90,64,'#ffffff','#ffe040');
   RANK.forEach((r,i)=>{const y=180+i*62,c=i===newRank&&frame%30<20?'#ff6060':'#ffffff';txt((i+1)+(['ST','ND','RD'][i]||'TH'),180,y,'#ffe040',34);txt(String(r.s).padStart(8,' '),520,y,c,34,'right');txt(r.st>=8?'ALL CLEAR':(ORD[r.st-1]||'1ST')+' MATCH',570,y,c,28);txt(r.n,880,y,c,30);});}
@@ -845,6 +848,7 @@ let acc=0,last=performance.now();
 window.__game={get mode(){return mode},get match(){return match},get ball(){return ball},get stats(){return stats},get slowmo(){return slowmo},get score(){return score},speed:1,onTick:null,
  ctrl:t=>ctrlP[t],myTouch,comingTo,predict,plan:()=>plan,serv:()=>serv,rot:()=>rot,side,get stage(){return stage}};
 function loop(t){acc+=Math.min(100,t-last);last=t;let n=0;while(acc>=1000/60&&n<6){for(let i=0;i<__game.speed;i++){if(__game.onTick)__game.onTick();update();}acc-=1000/60;n++;}if(n>=6)acc=0;render();requestAnimationFrame(loop);}
+const DISC_KO='본 게임은 팬이 비공식으로 제작한 비영리 팬메이드 작품으로, 방송사·제작사·구단·선수 및 원작 게임 권리자와 무관합니다. 모든 상표·로고·이름의 권리는 각 권리자에게 있습니다. 어떠한 판매나 수익을 목적으로 만든 것이 아니며, 판매 및 상업적 이용을 절대 금지합니다. 권리자의 요청 등 문제가 되는 경우 즉시 삭제하겠습니다.',DISC_EN="This is an unofficial, non-profit fan-made game, not affiliated with or endorsed by any broadcaster, production company, team, player, or the original game's rights holders. All trademarks, logos and names belong to their respective owners. It was not made for sale or profit; selling or any commercial use is strictly prohibited. It will be removed immediately upon any rights holder's request or concern.";
 // ===== ONLINE (PeerJS / WebRTC, host-authoritative) =====
 const NET={role:null,peer:null,conn:null,code:'',st:'menu',sel:0,inp:'',msg:'',remote:{l:0,r:0,u:0,d:0,b:0,bP:0},ready:[false,false],playing:false,ev:[],closing:false,copied:0};
 const NET_ICE={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}};
