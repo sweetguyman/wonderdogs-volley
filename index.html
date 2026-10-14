@@ -36,7 +36,7 @@ const cam={x:0,zoom:1,fx:256,fy:200,shake:0};
 function proj(x,h){return[SW/2+(x-cam.x)*KS,FLOORY-h*KS,KS];}
 // ===== TEAMS =====
 const TEAMS=[
- {id:'WDG',name:'WONDER DOGS',kr:'원더독스',shirt:'#f25a12',flame:'#c42a16',shorts:'#1c2160',trim:'#1c2160',pad:'#1c2160',vneck:true,logo:true,sleeve:false,band:false,em:['#1c2160','#f25a12','#ffffff'],hair:['#181412','#2a1a12','#121010'],skin:['#f0c08a','#e8b47c','#f2c898'],spd:4,jmp:3,pow:3,names:['백채림','인쿠시','윤영인','김다솔','김보빈','채선아']},
+ {id:'WDG',name:'WONDER DOGS',kr:'원더독스',shirt:'#f25a12',flame:'#c42a16',shorts:'#1c2160',trim:'#1c2160',pad:'#1c2160',vneck:true,logo:true,sleeve:false,band:false,em:['#1c2160','#f25a12','#ffffff'],hair:['#181412','#2a1a12','#121010'],skin:['#f0c08a','#e8b47c','#f2c898'],spd:4,jmp:3,pow:3,names:['한송희','이호빈','하효림','인쿠시','윤영인','채선아']},
  {id:'THK',name:'THUNDER HAWKS',kr:'썬더호크스',shirt:'#1f4fc8',shorts:'#f4f4f4',trim:'#ffd21a',sleeve:true,band:true,em:['#1f4fc8','#ffd21a','#ffffff'],glyph:'bolt',hair:['#151515','#2a1a10','#3a2414'],skin:['#f3c99a','#eabd8a','#f0c494'],spd:5,jmp:3,pow:2,names:['한유나','서지민','오하은','남윤희','배윤슬','임하솔']},
  {id:'CFX',name:'CRIMSON FOXES',kr:'크림슨폭스',shirt:'#c8202e',shorts:'#2a2a2e',trim:'#ffffff',sleeve:true,band:true,em:['#c8202e','#ffffff','#2a2a2e'],glyph:'fox',hair:['#6a4a2a','#2a1a10','#1a1a1a'],skin:['#f3cfa6','#e8b890','#d8a070'],spd:4,jmp:4,pow:3,names:['모가윤','신다현','권도아','홍세린','유보미','장아린']},
  {id:'JDR',name:'JADE DRAGONS',kr:'제이드드래곤즈',shirt:'#12905a',shorts:'#12905a',trim:'#f0c430',sleeve:true,band:true,em:['#0c6a42','#f0c430','#ffffff'],glyph:'wave',hair:['#1a1a1a','#5a3a1a','#2a1a10'],skin:['#f3cfa6','#c08860','#e8b890'],spd:3,jmp:4,pow:4,names:['고은비','양서진','송하연','전미래','구다인','황다슬']},
@@ -70,7 +70,7 @@ addEventListener('keyup',e=>{const k=nk(e.key);keys[k]=0;rel[k]=1;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=0;});
 let twoP=false,gm='story',selA=0,selB=1,pickRow=0,pick1P=true,storyLine=0;const PL=t=>(typeof match!=='undefined'&&match&&match.ctl)?match.ctl[t]:t;
 const any=(a,o)=>a.some(k=>o[k]);
-function ctlFor(t){t=PL(t);let L,R,U,Dn,B;if(twoP){if(t===0){L=['a'];R=['d'];U=['w'];Dn=['s'];B=['f','g'];}else{L=['ArrowLeft'];R=['ArrowRight'];U=['ArrowUp'];Dn=['ArrowDown'];B=['l','k','/','.'];}}
+function ctlFor(t){t=PL(t);if(NET.playing){if(t===1){const Q=NET.remote;return{l:!!Q.l,r:!!Q.r,u:!!Q.u,d:!!Q.d,b:!!Q.b,bP:!!Q.bP};}return keyCtl();}let L,R,U,Dn,B;if(twoP){if(t===0){L=['a'];R=['d'];U=['w'];Dn=['s'];B=['f','g'];}else{L=['ArrowLeft'];R=['ArrowRight'];U=['ArrowUp'];Dn=['ArrowDown'];B=['l','k','/','.'];}}
  else{L=['ArrowLeft','a'];R=['ArrowRight','d'];U=['ArrowUp','w'];Dn=['ArrowDown','s'];B=['z','x',' ','f','g'];}
  return{l:any(L,keys),r:any(R,keys),u:any(U,keys),d:any(Dn,keys),b:any(B,keys),bP:any(B,latch)};}
 const btnP=()=>any(['Enter','z','x',' ','f','g','l','k'],latch),upP=()=>any(['ArrowUp','w'],latch),dnP=()=>any(['ArrowDown','s'],latch),lfP=()=>any(['ArrowLeft','a'],latch),rtP=()=>any(['ArrowRight','d'],latch);
@@ -125,9 +125,12 @@ const ball={x:0,h:0,vx:0,vh:0,live:false,held:null,lastTeam:0,touches:0,lastP:nu
 let parts=[],say={s:'',t:0},popup=null;
 const stats={rallies:0,spikes:0,blocks:0,digs:0,matches:0,maxRally:0,cur:0};
 // ===== WONDER DOGS ROSTER (edit names here) =====
-const WD_ROSTER=[{num:14,name:'백채림'},{num:21,name:'인쿠시'},{num:19,name:'윤영인'},{num:18,name:'김다솔'},{num:17,name:'김보빈'},{num:6,name:'원더독스'},{num:3,name:'원더독스'},{num:2,name:'원더독스'},{num:8,name:'원더독스'},{num:1,name:'원더독스'}],
- WD_LIBERO=[{num:12,name:'채선아'},{num:7,name:'원더독스'}];
-function wdLineup(){const n=(match&&match.setNo||1)-1,F=WD_ROSTER,L=[];for(let i=0;i<5;i++)L.push(F[(n*2+i)%F.length]);L.push(WD_LIBERO[n%WD_LIBERO.length]);return L;}
+const WD_ROSTER=[{num:1,name:'한송희',pos:'OH'},{num:2,name:'하효림',pos:'S'},{num:3,name:'인쿠시',pos:'OH'},{num:6,name:'김보빈',pos:'MB'},{num:8,name:'백채림',pos:'OH'},{num:9,name:'윤영인',pos:'OPP'},
+ {num:14,name:'이호빈',pos:'MB'},{num:17,name:'지민경',pos:'OH'},{num:18,name:'김다솔',pos:'S'},{num:19,name:'이예담',pos:'MB'},{num:21,name:'이예은',pos:'OH'}],
+ WD_LIBERO=[{num:12,name:'채선아',pos:'L'},{num:7,name:'서유경',pos:'L'}];
+// lineup per set: [OH, MB, S, OH, OPP(or OH), L] - rotates through each position group
+function wdLineup(){const n=(match&&match.setNo||1)-1,G=k=>WD_ROSTER.filter(r=>r.pos===k),OH=G('OH'),S=G('S'),MB=G('MB'),OP=G('OPP');
+ const oh=i=>OH[(n*2+i)%OH.length];return[oh(0),MB[n%MB.length],S[n%S.length],oh(1),n%2===0&&OP.length?OP[0]:oh(2),WD_LIBERO[n%WD_LIBERO.length]];}
 const HOMEX=[220,65,25,45,120,170],RECVX=[230,80,28,55,120,175];
 function mkP(t,i,T){const WL=T.id==='WDG'?wdLineup()[i]:null;return{team:t,idx:i,T,name:WL?WL.name:T.names[i],num:WL?WL.num:[1,3,5,7,8,11][i],x:0,h:0,vx:0,vh:0,mx:0,dir:t?-1:1,state:'ground',act:null,runT:0,swing:0,dive:0,blk:false,canDig:true,
  skin:T.skin[i%3],hair:T.hair[i%3],spd:1.75+T.spd*0.12,jv:3.25+T.jmp*0.1,st:{spike:0,ace:0,block:0}};}
@@ -338,32 +341,35 @@ function saveRank(){const e={n:'YOU',s:score,st:stage+1,d:new Date().toISOString
 function newDemo(){const a=Math.random()*8|0;let b=Math.random()*8|0;if(b===a)b=(a+1)%8;newMatch(a,b,false,false,true);}
 function toAttract(m){mode=m||'title';attractT=0;newRank=m==='rank'?newRank:-1;if(mode==='demo'){newDemo();playSong('game');}else playSong('title');}
 function startStage(){if(gm==='story'){selA=0;selB=Math.min(stage+1,LAST);}newMatch(selA,selB,true,!!twoP,false);mode='play';playSong('game');}
-function update(){frame++;if(cam.shake>0)cam.shake--;timer++;const ok=btnP();
+function update(){if(NET.playing&&NET.role==='guest'){netGuestTick();return;}frame++;if(cam.shake>0)cam.shake--;timer++;const ok=btnP();
  switch(mode){
  case 'title':case 'rank':attractT++;if(mode==='rank'||mode==='title')stepFx();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}
   if(attractT>(mode==='title'?480:420))toAttract(mode==='title'?'demo':'title');break;
  case 'demo':attractT++;sim();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}if(attractT>1800)toAttract('rank');break;
- case 'mode':if(upP()||dnP()){menuSel^=1;sfx('menu');}if(ok||timer>600){sfx('ok');stage=0;score=0;timer=0;if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;mode='diff';}}break;
- case 'pick':{const nT=(v,d,o)=>{do{v=(v+d+8)%8;}while(v===o);return v;};if(upP()){pickRow=(pickRow+4)%5;sfx('menu');}if(dnP()){pickRow=(pickRow+1)%5;sfx('menu');}
-  if(lfP()||rtP()){const d=lfP()?-1:1;sfx('menu');if(pickRow===0)selA=nT(selA,d,selB);else if(pickRow===1)selB=nT(selB,d,selA);else if(pickRow===2)pick1P=!pick1P;else if(pickRow===3)diff=(diff+3+d)%3;}
-  if(ok){sfx('ok');if(pickRow<4)pickRow++;else{saveDiff();twoP=!pick1P;stage=2;mode='inst';instPage=0;timer=0;}}break;}
+ case 'mode':if(upP()){menuSel=(menuSel+2)%3;sfx('menu');}if(dnP()){menuSel=(menuSel+1)%3;sfx('menu');}if(ok||timer>600){sfx('ok');stage=0;score=0;timer=0;if(menuSel===2){mode='online';NET.st='menu';NET.sel=0;}else if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;mode='diff';}}break;
+ case 'pick':{const nT=(v,d,o)=>{do{v=(v+d+8)%8;}while(v===o);return v;};if(upP()){pickRow=(pickRow+3)%4;sfx('menu');}if(dnP()){pickRow=(pickRow+1)%4;sfx('menu');}
+  if(lfP()||rtP()){const d=lfP()?-1:1;sfx('menu');if(pickRow===0)selA=nT(selA,d,selB);else if(pickRow===1)selB=nT(selB,d,selA);else if(pickRow===2)diff=(diff+3+d)%3;}
+  if(ok){sfx('ok');if(pickRow<3)pickRow++;else{saveDiff();twoP=false;stage=2;mode='inst';instPage=0;timer=0;}}break;}
  case 'story':if(ok&&timer>10){timer=0;storyLine++;sfx('menu');if(storyLine>=STORY[stage].length){storyLine=0;if(stage>=LAST){mode='ending';}else{mode='overview';}}}break;
  case 'setbreak':stepFx();if(timer>220||(ok&&timer>40)){newSet();mode='play';timer=0;}break;
  case 'pick2p':if(lfP()){p2team=(p2team+4)%5+1;sfx('menu');}if(rtP()){p2team=p2team%5+1;sfx('menu');}if(ok||timer>600){sfx('ok');mode='inst';instPage=0;timer=0;}break;
  case 'inst':if(ok||timer>480){timer=0;instPage++;sfx('menu');if(instPage>2){mode=gm==='story'?'story':'overview';storyLine=0;timer=0;}}break;
  case 'diff':if(upP()){diff=(diff+2)%3;sfx('menu');}if(dnP()){diff=(diff+1)%3;sfx('menu');}if(ok&&timer>10){sfx('ok');saveDiff();mode='prologue';proI=0;proL=0;timer=0;}break;
  case 'prologue':if(ok&&timer>10){timer=0;proL++;sfx('menu');if(proL>=PROLOGUE[proI].lines.length){proL=0;proI++;if(proI>=PROLOGUE.length){mode='inst';instPage=0;}}}break;
+ case 'online':netOnlineUpdate(ok);break;
+ case 'netmsg':if(timer>200||(ok&&timer>30)){mode='mode';timer=0;menuSel=2;}break;
  case 'overview':mode='intro';timer=0;whistle();break;
  case 'intro':if(timer>220||(ok&&timer>30)){startStage();timer=0;}break;
  case 'play':if(keyHit('p')){mode='pause';break;}if(slowmo>0){slowmo--;if(slowmo%3!==0)break;}sim();break;
  case 'pause':if(keyHit('p')||ok)mode='play';break;
  case 'gameset':stepFx();if(timer>260){timer=0;const w=match.over;
-   if(twoP||gm==='exh'){toAttract('title');}else if(w===match.p1){stage++;stats.matches++;storyLine=0;mode='story';}else{mode='continue';}}break;
+   if(NET.playing){netEnd();}else if(twoP||gm==='exh'){toAttract('title');}else if(w===match.p1){stage++;stats.matches++;storyLine=0;mode='story';}else{mode='continue';}}break;
  case 'continue':{if(timer%60===0&&timer<600)sfx2('tick');if(ok&&timer>20){sfx2('coin');mode='intro';timer=0;break;}if(timer>600){mode='gameover';timer=0;}break;}
  case 'gameover':if(timer>200){saveRank();toAttract('rank');}break;
  case 'ending':stepFx();if(timer<400&&frame%2===0)for(let i=0;i<3;i++)parts.push({type:'conf',sx:rnd(0,W),sy:-10,vx:rnd(-1,1),vy:rnd(1,2.5),rot:rnd(0,6),col:pick(['#ff5050','#ffde00','#50a0ff','#50ff90','#ffffff']),life:400,max:400});
   if(timer>520){saveRank();toAttract('rank');}break;}
  if(keyHit('m')){musicOn=!musicOn;if(musicG)musicG.gain.value=musicOn?0.33:0;}
+ if(NET.playing&&NET.role==='host'){NET.remote.bP=0;if(frame%2===0)netSnap();}
  for(const k in latch)delete latch[k];for(const k in rel)delete rel[k];}
 function keyHit(k){return!!latch[k];}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')mode='pause';});
@@ -759,9 +765,11 @@ function screens(){
   txt('© 2026 FAN-MADE ARCADE TRIBUTE · INSPIRED BY SUPER VOLLEY \'91',W/2,700,'#ffe040',18,'center');txt('CREDIT: '+credits,W-40,740,'#fff',18,'right');}
  else if(mode==='rank'){blueBG();big('SCORE RANKING',W/2,90,64,'#ffffff','#ffe040');
   RANK.forEach((r,i)=>{const y=180+i*62,c=i===newRank&&frame%30<20?'#ff6060':'#ffffff';txt((i+1)+(['ST','ND','RD'][i]||'TH'),180,y,'#ffe040',34);txt(String(r.s).padStart(8,' '),520,y,c,34,'right');txt(r.st>=8?'ALL CLEAR':(ORD[r.st-1]||'1ST')+' MATCH',570,y,c,28);txt(r.n,880,y,c,30);});}
+ else if(mode==='online'){netRender();}
+ else if(mode==='netmsg'){blueBG();M.fillStyle='rgba(0,0,0,0.6)';M.fillRect(140,260,744,220);big('연결 종료',W/2,320,52,'#ffffff','#ff9090');txt(NET.msg,W/2,400,'#fff',26,'center');txt('잠시 후 메뉴로 돌아갑니다',W/2,450,'#c8d0f0',18,'center');}
  else if(mode==='mode'){blueBG();txt('게임을 선택해 주세요',W/2,110,'#fff',34,'center');
-  ['스토리 모드','팀 선택 경기'].forEach((s,i)=>{const y=260+i*130,sel=menuSel===i;if(sel){M.fillStyle='#fff';M.beginPath();M.arc(310,y,26,0,7);M.fill();M.fillStyle='#e02020';M.fillRect(296,y-4,28,8);}big(s,560,y,72,sel?'#ffffff':'#8a9ad8',sel?'#ffe040':'#5a6ab8');});
-  txt('TIME '+Math.max(0,10-Math.floor(timer/60)),W/2,600,'#fff',32,'center');txt('원더독스 · WONDER DOGS   (2P 대전은 팀 선택 경기에서)',W/2,660,'#ffe040',22,'center');txt('CREDIT: 1',W-40,740,'#fff',18,'right');}
+  ['스토리 모드','팀 선택 경기','온라인 대전'].forEach((s,i)=>{const y=230+i*120,sel=menuSel===i;if(sel){M.fillStyle='#fff';M.beginPath();M.arc(310,y,26,0,7);M.fill();M.fillStyle='#e02020';M.fillRect(296,y-4,28,8);}big(s,560,y,72,sel?'#ffffff':'#8a9ad8',sel?'#ffe040':'#5a6ab8');});
+  txt('TIME '+Math.max(0,10-Math.floor(timer/60)),W/2,600,'#fff',32,'center');txt('원더독스 · WONDER DOGS',W/2,660,'#ffe040',22,'center');txt('CREDIT: 1',W-40,740,'#fff',18,'right');}
  else if(mode==='pick2p'){blueBG();txt('2P 팀을 선택해 주세요 (←→)',W/2,110,'#fff',32,'center');const T=TEAMS[p2team];drawFlag('WDG',220,250,200,170);drawFlag(T.id,620,260,170,150);big('VS',W/2,327,60,'#fff','#ffe040');
   txt('WONDER DOGS (1P)',320,450,'#fff',30,'center');txt(T.name+' (2P)',704,440,'#fff',30,'center');txt('TIME '+Math.max(0,10-Math.floor(timer/60)),W/2,600,'#fff',32,'center');}
  else if(mode==='inst'){blueBG();txt('조작 설명',W/2,70,'#fff',36,'center');
@@ -786,10 +794,10 @@ function screens(){
   if(t>34){const s2=1+0.6*Math.max(0,1-(t-34)/12);M.save();M.translate(W/2,ya);M.scale(s2,s2);big('VS',0,0,80,'#fff','#ffe040');M.restore();}
   if(t>50){M.fillStyle='rgba(6,10,24,0.8)';M.fillRect(0,736,W,32);txt((st?'SCORE: '+score+'  ·  ':'')+`${SET_POINTS}점 세트 · ${SETS_TO_WIN}세트 선승 · 듀스 적용`,W/2,752,'#ffe040',20,'center');}
   if(t>40&&frame%40<26)txt('▼ BUTTON',W-20,752,'#fff',18,'right');}
- else if(mode==='pick'){blueBG();txt('팀 선택 경기 · 8 TEAMS',W/2,34,'#fff',34,'center');TEAMS.forEach((T,i)=>{const x=W/2-4*58+i*58;if(i===selA||i===selB){M.fillStyle=i===selA?'#ffe040':'#ff6060';M.fillRect(x-2,58,54,54);}drawEmblem(T.id,x+3,61,44,44);});const A=TEAMS[selA],B=TEAMS[selB],rowY=[462,508,554,600,660];
+ else if(mode==='pick'){blueBG();txt('팀 선택 경기 · 8 TEAMS',W/2,34,'#fff',34,'center');TEAMS.forEach((T,i)=>{const x=W/2-4*58+i*58;if(i===selA||i===selB){M.fillStyle=i===selA?'#ffe040':'#ff6060';M.fillRect(x-2,58,54,54);}drawEmblem(T.id,x+3,61,44,44);});const A=TEAMS[selA],B=TEAMS[selB],rowY=[470,525,580,650];
   M.fillStyle='rgba(0,0,0,0.45)';M.fillRect(90,110,844,320);drawFlag(A.id,150,130,220,220);drawFlag(B.id,654,130,220,220);big('VS',W/2,250,60,'#fff','#ffe040');
   txt(A.name,260,385,A.em?A.em[1]:'#fff',28,'center');txt(A.kr,260,416,'#fff',22,'center');txt(B.name,764,385,B.em?B.em[1]:'#fff',28,'center');txt(B.kr,764,416,'#fff',22,'center');
-  const rows=[['내 팀 (1P)','◀ '+A.kr+' ▶'],['상대 팀','◀ '+B.kr+' ▶'],['플레이','◀ '+(pick1P?'1P vs CPU':'2P 대전')+' ▶'],['난이도','◀ '+DIFFN[diff]+' ▶'],['시작!','BUTTON']];
+  const rows=[['내 팀 (1P)','◀ '+A.kr+' ▶'],['상대 팀','◀ '+B.kr+' ▶'],['난이도','◀ '+DIFFN[diff]+' ▶'],['시작!','BUTTON']];
   rows.forEach((r,i)=>{const sel=pickRow===i,y=rowY[i];if(sel){M.fillStyle='rgba(255,224,64,0.18)';M.fillRect(220,y-24,584,46);}txt((sel?'▶ ':'  ')+r[0],250,y,sel?'#ffe040':'#c8d0f0',28);txt(r[1],780,y,sel?'#fff':'#8a9ad8',28,'right');});
   txt('↑↓ 항목 · ←→ 변경 · BUTTON 다음/시작',W/2,720,'#fff',22,'center');}
  else if(mode==='diff'){blueBG();M.fillStyle='rgba(0,0,0,0.5)';M.fillRect(212,150,600,440);big('난이도 선택',W/2,210,52,'#ffffff','#ffd080');txt('STORY MODE',W/2,260,'#ffe040',22,'center');
@@ -831,5 +839,75 @@ let acc=0,last=performance.now();
 window.__game={get mode(){return mode},get match(){return match},get ball(){return ball},get stats(){return stats},get slowmo(){return slowmo},get score(){return score},speed:1,onTick:null,
  ctrl:t=>ctrlP[t],myTouch,comingTo,predict,plan:()=>plan,serv:()=>serv,rot:()=>rot,side,get stage(){return stage}};
 function loop(t){acc+=Math.min(100,t-last);last=t;let n=0;while(acc>=1000/60&&n<6){for(let i=0;i<__game.speed;i++){if(__game.onTick)__game.onTick();update();}acc-=1000/60;n++;}if(n>=6)acc=0;render();requestAnimationFrame(loop);}
+// ===== ONLINE (PeerJS / WebRTC, host-authoritative) =====
+const NET={role:null,peer:null,conn:null,code:'',st:'menu',sel:0,inp:'',msg:'',remote:{l:0,r:0,u:0,d:0,b:0,bP:0},ready:[false,false],playing:false,ev:[],closing:false,copied:0};
+const NET_ICE={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}};
+function netCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=A[Math.random()*A.length|0];return s;}
+function netLink(){return location.origin+location.pathname+'?room='+NET.code;}
+function loadPeer(cb){if(window.Peer)return cb();const s=document.createElement('script');s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';s.onload=cb;s.onerror=()=>netFail('PeerJS를 불러오지 못했습니다');document.head.appendChild(s);}
+function netHost(){NET.role='host';NET.st='wait';NET.code=netCode();loadPeer(()=>{if(NET.role!=='host')return;const p=new Peer('wdvolley-'+NET.code,NET_ICE);NET.peer=p;
+ p.on('error',e=>{if(e.type==='unavailable-id'){try{p.destroy()}catch(x){}NET.peer=null;netHost();}else if(!NET.conn)netFail('연결 오류: '+e.type);});
+ p.on('connection',c=>{if(NET.conn&&NET.conn.open){c.close();return;}if(NET.conn){const o=NET.conn;NET.conn=null;NET.closing=true;try{o.close();}catch(e){}NET.closing=false;}netBind(c);});});}
+function netJoin(code){NET.role='guest';NET.code=code;NET.st='connecting';loadPeer(()=>{if(NET.role!=='guest')return;const p=new Peer(undefined,NET_ICE);NET.peer=p;
+ p.on('error',e=>netFail(e.type==='peer-unavailable'?'방을 찾을 수 없습니다 ('+code+')':'연결 오류: '+e.type));
+ p.on('open',()=>netBind(p.connect('wdvolley-'+code,{reliable:true})));});
+ setTimeout(()=>{if(NET.role==='guest'&&NET.st==='connecting')netFail('연결 시간 초과 (방화벽/NAT 문제일 수 있습니다)');},20000);}
+function netBind(c){NET.conn=c;c.on('open',()=>{NET.st='pick';NET.ready=[false,false];selA=0;selB=1;sfx('ok');netSendPick();});c.on('data',netRx);
+ c.on('close',()=>{if(c===NET.conn)netFail('상대와 연결이 끊어졌습니다');});c.on('error',()=>{if(c===NET.conn)netFail('연결 오류');});}
+function netSend(o){if(NET.conn&&NET.conn.open)try{NET.conn.send(o);}catch(e){}}
+function netSendPick(){const me=NET.role==='host'?0:1;netSend({t:'pick',team:me?selB:selA,ready:NET.ready[me]});}
+function netClose(){NET.closing=true;const c=NET.conn,p=NET.peer;NET.conn=null;NET.peer=null;NET.playing=false;NET.role=null;NET.st='menu';try{c&&c.close();}catch(e){}try{p&&p.destroy();}catch(e){}twoP=false;match=null;NET.closing=false;}
+function netFail(m){if(NET.closing||(!NET.role&&!NET.playing))return;NET.msg=m;netClose();mode='netmsg';timer=0;playSong('title');}
+function netEnd(){netSend({t:'bye'});setTimeout(()=>{netClose();},300);NET.playing=false;mode='mode';timer=0;menuSel=2;playSong('title');}
+function netStart(){gm='exh';twoP=true;stage=2;NET.playing=true;netSend({t:'start',a:selA,b:selB});mode='overview';timer=0;}
+const NET_REPL=(k,v)=>(v&&typeof v==='object'&&v.T&&typeof v.T==='object'&&v.team!==undefined)?{__p:players.indexOf(v)}:v;
+function netSnap(){const P=JSON.stringify(players.map(p=>Object.assign({},p,{T:p.T.id})),NET_REPL);
+ const R=JSON.stringify({mode,timer,match,ball,rot,plan,ctrlP,serv,cam,cutCur,say,popup,hype,slowmo,netShake,refWhistle,rallyEnd,stats,selA,selB,coach:{react:COACH.react,rt:COACH.rt},parts:parts.slice(-50),ev:NET.ev.splice(0)},NET_REPL);
+ netSend({t:'s',P,R});}
+function netApply(d){const old=players,ps=JSON.parse(d.P).map(q=>Object.assign(q,{T:TEAMS.find(t=>t.id===q.T)||TEAMS[0]}));
+ ps.forEach((q,i)=>{q._tx=q.x;q._th=q.h;const o=old[i];if(o&&o.T===q.T&&o.idx===q.idx){q.x=o.x;q.h=o.h;}});players=ps;
+ const R=JSON.parse(d.R,(k,v)=>(v&&typeof v==='object'&&v.__p!==undefined)?(players[v.__p]||null):v);
+ const bx=ball.x,bh=ball.h;mode=R.mode;timer=R.timer;match=R.match;Object.assign(ball,R.ball);ball._tx=ball.x;ball._th=ball.h;if(Math.abs(bx-ball.x)<40){ball.x=bx;ball.h=bh;}
+ rot=R.rot;plan=R.plan;ctrlP=R.ctrlP;serv=R.serv;Object.assign(cam,R.cam);cutCur=R.cutCur;say=R.say;popup=R.popup;hype=R.hype;slowmo=R.slowmo;netShake=R.netShake;refWhistle=R.refWhistle;rallyEnd=R.rallyEnd;Object.assign(stats,R.stats);selA=R.selA;selB=R.selB;
+ COACH.react=R.coach.react;COACH.rt=R.coach.rt;parts=R.parts;(R.ev||[]).forEach(e=>{const f=NET_AUD[e[0]];if(f)f(...e.slice(1));});}
+function netRx(d){if(!d||!d.t)return;
+ if(d.t==='pick'){if(NET.role==='host'){selB=d.team;NET.ready[1]=d.ready;}else{selA=d.team;NET.ready[0]=d.ready;}}
+ else if(d.t==='in'&&NET.role==='host'){const R=NET.remote;R.l=d.l;R.r=d.r;R.u=d.u;R.d=d.d;R.b=d.b;if(d.bP)R.bP=1;}
+ else if(d.t==='start'&&NET.role==='guest'){gm='exh';twoP=true;stage=2;selA=d.a;selB=d.b;NET.playing=true;mode='overview';timer=0;}
+ else if(d.t==='s'&&NET.role==='guest'&&NET.playing)netApply(d);
+ else if(d.t==='bye'){NET.closing=true;NET.playing=false;mode='mode';timer=0;menuSel=2;playSong('title');NET.closing=false;netClose();}}
+function keyCtl(){const L=['ArrowLeft','a'],R=['ArrowRight','d'],U=['ArrowUp','w'],Dn=['ArrowDown','s'],B=['z','x',' ','f','g'];return{l:any(L,keys),r:any(R,keys),u:any(U,keys),d:any(Dn,keys),b:any(B,keys),bP:any(B,latch)};}
+function netGuestTick(){frame++;timer++;const c=keyCtl();netSend({t:'in',l:c.l?1:0,r:c.r?1:0,u:c.u?1:0,d:c.d?1:0,b:c.b?1:0,bP:c.bP?1:0});
+ players.forEach(p=>{if(p._tx!==undefined){p.x+=(p._tx-p.x)*0.5;p.h+=(p._th-p.h)*0.5;}});if(ball._tx!==undefined){ball.x+=(ball._tx-ball.x)*0.6;ball.h+=(ball._th-ball.h)*0.6;}
+ if(keyHit('m')){musicOn=!musicOn;if(musicG)musicG.gain.value=musicOn?0.33:0;}
+ for(const k in latch)delete latch[k];for(const k in rel)delete rel[k];}
+function netOnlineUpdate(ok){const me=NET.role==='host'?0:1;
+ if(NET.st==='menu'){if(upP()){NET.sel=(NET.sel+2)%3;sfx('menu');}if(dnP()){NET.sel=(NET.sel+1)%3;sfx('menu');}
+  if(ok){sfx('ok');if(NET.sel===0)netHost();else if(NET.sel===1){NET.st='join';NET.inp='';}else{mode='mode';timer=0;}}}
+ else if(NET.st==='wait'){if(keyHit('c')){try{navigator.clipboard.writeText(netLink());NET.copied=90;}catch(e){}}if(keyHit('Escape')){netClose();NET.st='menu';}}
+ else if(NET.st==='join'){if(keyHit('Escape'))NET.st='menu';}
+ else if(NET.st==='connecting'){if(keyHit('Escape')){netClose();NET.st='menu';}}
+ else if(NET.st==='pick'){if(!NET.ready[me]&&(lfP()||rtP())){const d=lfP()?-1:1;if(me===0)selA=(selA+d+8)%8;else selB=(selB+d+8)%8;sfx('menu');netSendPick();}
+  if(ok){NET.ready[me]=!NET.ready[me];sfx('ok');netSendPick();}
+  if(me===0&&NET.ready[0]&&NET.ready[1])netStart();}
+ if(NET.copied>0)NET.copied--;}
+addEventListener('keydown',e=>{if(mode==='online'&&NET.st==='join'){const k=e.key;if(/^[a-zA-Z0-9]$/.test(k)&&NET.inp.length<4)NET.inp+=k.toUpperCase();else if(k==='Backspace')NET.inp=NET.inp.slice(0,-1);else if(k==='Enter'&&NET.inp.length===4)netJoin(NET.inp);}});
+function netRender(){blueBG();M.fillStyle='rgba(0,0,0,0.5)';M.fillRect(140,130,744,520);big('온라인 대전',W/2,90,56,'#ffffff','#ffd080');
+ if(NET.st==='menu'){['방 만들기','참가하기','뒤로'].forEach((s,i)=>{const y=250+i*110,sel=NET.sel===i;big(s,W/2,y,56,sel?'#ffffff':'#8a9ad8',sel?'#ffe040':'#5a6ab8');if(sel)txt('▶',W/2-220,y,'#ffe040',40,'center');});txt('WebRTC P2P · 상대와 방 코드를 공유하세요',W/2,610,'#c8d0f0',20,'center');}
+ else if(NET.st==='wait'){txt('방 코드',W/2,190,'#c8d0f0',26,'center');big(NET.code||'....',W/2,290,110,'#ffffff','#ffe040');txt(NET.peer&&NET.peer.open?'상대를 기다리는 중'+'.'.repeat(1+(frame/20|0)%3):'서버 연결 중...',W/2,400,'#fff',26,'center');
+  txt('초대 링크:',W/2,460,'#c8d0f0',20,'center');txt(netLink(),W/2,495,'#ffe040',18,'center');txt(NET.copied?'링크 복사됨!':'C = 링크 복사   ESC = 취소',W/2,560,NET.copied?'#60e080':'#fff',22,'center');}
+ else if(NET.st==='join'){txt('방 코드 4자리를 입력하세요',W/2,210,'#fff',28,'center');const s=NET.inp.padEnd(4,'_');for(let i=0;i<4;i++){M.fillStyle='rgba(255,255,255,0.12)';M.fillRect(W/2-170+i*90,260,70,100);big(s[i],W/2-135+i*90,312,72,'#ffffff','#ffe040');}
+  txt('키보드로 입력 · ENTER 참가 · ESC 취소',W/2,440,'#c8d0f0',22,'center');}
+ else if(NET.st==='connecting'){txt('방 '+NET.code+' 에 연결 중'+'.'.repeat(1+(frame/20|0)%3),W/2,330,'#fff',32,'center');txt('ESC = 취소',W/2,420,'#c8d0f0',22,'center');}
+ else if(NET.st==='pick'){const me=NET.role==='host'?0:1,A=TEAMS[selA],B=TEAMS[selB];txt('팀을 고르세요 (←→) · BUTTON = 준비',W/2,160,'#fff',26,'center');
+  [[A,0,260],[B,1,764]].forEach(([T,i,x])=>{drawFlag(T.id,x-90,200,180,180);txt((i?'2P':'1P')+(i===me?' (나)':' (상대)'),x,410,i?'#40e0ff':'#ffe040',24,'center');txt(T.name,x,450,'#fff',26,'center');txt(T.kr,x,482,'#ffe040',20,'center');txt(NET.ready[i]?'준비 완료!':'선택 중...',x,530,NET.ready[i]?'#60e080':'#c8d0f0',24,'center');});
+  big('VS',W/2,300,64,'#fff','#ffe040');txt('방 '+NET.code+(me?' · 호스트가 시작합니다':' · 둘 다 준비되면 시작'),W/2,610,'#c8d0f0',20,'center');}}
+
+const NET_AUD={sfx,sfx2,whistle,playSong};
+sfx=function(n){if(NET.playing&&NET.role==='host')NET.ev.push(['sfx',n]);return NET_AUD.sfx(n);};
+sfx2=function(n){if(NET.playing&&NET.role==='host')NET.ev.push(['sfx2',n]);return NET_AUD.sfx2(n);};
+whistle=function(l){if(NET.playing&&NET.role==='host')NET.ev.push(['whistle',l]);return NET_AUD.whistle(l);};
+playSong=function(n){if(NET.playing&&NET.role==='host')NET.ev.push(['playSong',n]);return NET_AUD.playSong(n);};
 toAttract('title');requestAnimationFrame(loop);
+{const rm=new URLSearchParams(location.search).get('room');if(rm&&/^[A-Za-z0-9]{4}$/.test(rm)){credits=1;mode='online';NET.code=rm.toUpperCase();netJoin(NET.code);}}
 </script></body></html>
