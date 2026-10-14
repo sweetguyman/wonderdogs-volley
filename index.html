@@ -46,15 +46,16 @@ const TEAMS=[
  {id:'SNT',name:'SUNSET TIGERS',kr:'선셋타이거즈',shirt:'#f0b81a',shorts:'#7a1e14',trim:'#7a1e14',sleeve:true,band:true,em:['#7a1e14','#f0b81a','#ffffff'],glyph:'sun',hair:['#141010','#2a1a10','#1a1412'],skin:['#c88a5a','#d89a68','#b87c50'],spd:5,jmp:4,pow:4,names:['라온비','도하윤','마예진','표서율','어지안','국하나']},
  {id:'NVS',name:'NOVA STARS',kr:'노바스타즈',shirt:'#18b8c8',shorts:'#20203a',trim:'#ff5aa0',sleeve:true,band:true,em:['#20203a','#18b8c8','#ff5aa0'],glyph:'star',hair:['#1a1a1a','#5a3020','#2a1a10'],skin:['#f3cfa6','#eabd8a','#f6d2b0'],spd:4,jmp:5,pow:5,names:['우다솜','제나연','함소이','왕채린','반도희','석유리']},
  {id:'RSW',name:'ROYAL SWANS',kr:'로열스완즈',shirt:'#f4f4f8',shorts:'#5a2a9a',trim:'#5a2a9a',sleeve:true,band:true,em:['#5a2a9a','#f4f4f8','#f0c430'],glyph:'crown',hair:['#b08040','#1a1a1a','#5a4030'],skin:['#f6d2b0','#f0c8a0','#f8dcc0'],spd:3,jmp:5,pow:5,names:['백설아','엄소담','소예나','길하람','명주희','진여울']}];
-const STORY=[
- ['원더독스, 오늘부터 우리가 진짜 팀이에요.','아무도 우리를 기대하지 않아요.\n그래서 더 재미있죠.','첫 상대는 썬더호크스. 빠른 팀이에요.\n리시브부터 침착하게! 원더독스 파이팅!'],
- ['첫 승, 정말 잘했어요!','다음은 크림슨폭스. 블로킹이 영리한 팀이에요.\n코스를 보고 때리세요.'],
- ['2연승! 사람들이 원더독스 이름을 부르기 시작했어요.','제이드드래곤즈는 수비가 끈질겨요.\n마지막 공까지 포기하지 마세요!'],
- ['힘들죠? 그래도 지금이\n가장 많이 성장하는 순간이에요.','스틸팬서스의 강서브만 버티면 기회가 와요.'],
- ['이제 해외 원정팀이에요.','선셋타이거즈는 빠르고 탄력이 좋아요.\n높이 싸움에서 밀리지 마세요!'],
- ['준결승! 상대는 신생 구단 노바스타즈.','우리처럼 처음부터 시작한 팀이에요.\n그래서 더 지면 안 돼요!'],
- ['결승전. 언더독이 여기까지 왔어요.','로열스완즈는 리그 최강이에요.\n하지만 우리는 원더독스예요.','후회 없이 마음껏! 원더독스 파이팅!'],
- ['우승이에요!! 여러분이 해냈어요!','처음 모였을 때 기억나요?\n언더독이 원더가 됐어요.','이 정도면 구단주도 나타나겠죠?\n다음 시즌도 함께 가요!']];
+const TFLAV={1:['썬더호크스는 빠른 팀이에요.\n리시브부터 침착하게!'],2:['크림슨폭스는 블로킹이 영리한 팀이에요.\n코스를 보고 때리세요.'],3:['제이드드래곤즈는 수비가 끈질겨요.\n마지막 공까지 포기하지 마세요!'],
+ 4:['스틸팬서스는 강서브가 무기예요.\n그 서브만 버티면 기회가 와요.'],5:['선셋타이거즈는 해외 원정팀이에요.\n빠르고 탄력이 좋으니 높이 싸움에서 밀리지 마세요!'],6:['노바스타즈는 신생 구단, 우리처럼 처음부터 시작한 팀이에요.\n그래서 더 지면 안 돼요!'],7:['로열스완즈는 리그 최강이라 불리는 팀이에요.\n하지만 우리는 원더독스예요.']};
+let STORDER=[1,2,3,4,5,6,7];
+function shuffleStory(){const a=[1,2,3,4,5,6,7];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}STORDER=a;}
+const storyOpp=()=>STORDER[Math.min(stage,LAST-1)];
+function storyLines(st){if(st>=LAST)return['우승이에요!! 여러분이 해냈어요!','처음 모였을 때 기억나요?\n언더독이 원더가 됐어요.','이 정도면 구단주도 나타나겠죠?\n다음 시즌도 함께 가요!'];
+ const T=TEAMS[STORDER[st]].kr,F=TFLAV[STORDER[st]]||[];
+ const H=[['원더독스, 오늘부터 우리가 진짜 팀이에요.','아무도 우리를 기대하지 않아요.\n그래서 더 재미있죠.',`첫 상대는 ${T}!`],['첫 승, 정말 잘했어요!',`다음 상대는 ${T}.`],['2연승! 사람들이 원더독스 이름을 부르기 시작했어요.',`다음은 ${T}.`],
+  ['힘들죠? 그래도 지금이\n가장 많이 성장하는 순간이에요.',`다음 상대는 ${T}.`],['4연승! 이제 강팀들만 남았어요.',`상대는 ${T}.`],[`준결승! 상대는 ${T}.`],['결승전. 언더독이 여기까지 왔어요.',`마지막 상대는 ${T}!`]][st];
+ return H.concat(F,st===0?['원더독스 파이팅!']:st===LAST-1?['후회 없이 마음껏! 원더독스 파이팅!']:[]);}
 const STORYF=[['timeout','goodplay','score'],['ace','pointlost'],['goodplay','shocked'],['timeout','pointlost'],['shocked','goodplay'],['timeout','mistake'],['timeout','shocked','score'],['matchwin','goodplay','ace']];
 const ORD=['1ST','2ND','3RD','4TH','5TH','SEMI','FINAL'];
 const LAST=7;
@@ -70,7 +71,7 @@ const keys={},latch={},rel={};const nk=k=>k.length===1?k.toLowerCase():k;
 addEventListener('keydown',e=>{const k=nk(e.key);if(/^Arrow/.test(e.key)||e.key===' ')e.preventDefault();audioInit();if(!keys[k])latch[k]=1;keys[k]=1;});
 addEventListener('keyup',e=>{const k=nk(e.key);keys[k]=0;rel[k]=1;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=0;});
-let twoP=false,gm='story',selA=0,selB=1,pickRow=0,pick1P=true,storyLine=0;const PL=t=>(typeof match!=='undefined'&&match&&match.ctl)?match.ctl[t]:t;
+let exhRand=true,lastOpp=-1,twoP=false,gm='story',selA=0,selB=1,pickRow=0,pick1P=true,storyLine=0;const PL=t=>(typeof match!=='undefined'&&match&&match.ctl)?match.ctl[t]:t;
 const any=(a,o)=>a.some(k=>o[k]);
 function ctlFor(t){t=PL(t);if(NET.playing){if(t===1){const Q=NET.remote;return{l:!!Q.l,r:!!Q.r,u:!!Q.u,d:!!Q.d,b:!!Q.b,bP:!!Q.bP};}return keyCtl();}let L,R,U,Dn,B;if(twoP){if(t===0){L=['a'];R=['d'];U=['w'];Dn=['s'];B=['f','g'];}else{L=['ArrowLeft'];R=['ArrowRight'];U=['ArrowUp'];Dn=['ArrowDown'];B=['l','k','/','.'];}}
  else{L=['ArrowLeft','a'];R=['ArrowRight','d'];U=['ArrowUp','w'];Dn=['ArrowDown','s'];B=['z','x',' ','f','g'];}
@@ -452,17 +453,17 @@ let RANK=loadRank();
 function saveRank(){const e={n:'YOU',s:score,st:stage+1,d:new Date().toISOString().slice(0,10)};RANK.push(e);RANK.sort((a,b)=>b.s-a.s);RANK=RANK.slice(0,8);newRank=RANK.indexOf(e);try{localStorage.setItem('sv91w-rank',JSON.stringify(RANK));}catch(x){}}
 function newDemo(){const a=Math.random()*8|0;let b=Math.random()*8|0;if(b===a)b=(a+1)%8;newMatch(a,b,false,false,true);}
 function toAttract(m){mode=m||'title';attractT=0;newRank=m==='rank'?newRank:-1;if(mode==='demo'){newDemo();playSong('game');}else playSong('title');}
-function startStage(){if(gm==='story'){selA=0;selB=Math.min(stage+1,LAST);}newMatch(selA,selB,true,!!twoP,false);mode='play';playSong('game');}
+function startStage(){if(gm==='story'){selA=0;selB=storyOpp();}newMatch(selA,selB,true,!!twoP,false);mode='play';playSong('game');}
 function update(){if(NET.playing&&NET.role==='guest'){netGuestTick();return;}frame++;if(cam.shake>0)cam.shake--;timer++;const ok=btnP();
  switch(mode){
  case 'title':case 'rank':attractT++;if(mode==='rank'||mode==='title')stepFx();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}
   if(mode==='rank'&&attractT>600)toAttract('title');break;
  case 'demo':attractT++;sim();if(ok){credits=1;sfx2('coin');mode='mode';timer=0;menuSel=0;playSong('title');break;}if(attractT>1800)toAttract('rank');break;
- case 'mode':if(upP()){menuSel=(menuSel+2)%3;sfx('menu');}if(dnP()){menuSel=(menuSel+1)%3;sfx('menu');}if(ok){sfx('ok');stage=0;score=0;timer=0;if(menuSel===2){mode='online';NET.st='menu';NET.sel=0;}else if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;mode='diff';}}break;
+ case 'mode':if(upP()){menuSel=(menuSel+2)%3;sfx('menu');}if(dnP()){menuSel=(menuSel+1)%3;sfx('menu');}if(ok){sfx('ok');stage=0;score=0;timer=0;if(menuSel===2){mode='online';NET.st='menu';NET.sel=0;}else if(menuSel===1){gm='exh';mode='pick';pickRow=0;selA=0;selB=1;pick1P=true;}else{gm='story';twoP=false;selA=0;selB=1;shuffleStory();mode='diff';}}break;
  case 'pick':{const nT=(v,d,o)=>{do{v=(v+d+8)%8;}while(v===o);return v;};if(upP()){pickRow=(pickRow+3)%4;sfx('menu');}if(dnP()){pickRow=(pickRow+1)%4;sfx('menu');}
-  if(lfP()||rtP()){const d=lfP()?-1:1;sfx('menu');if(pickRow===0)selA=nT(selA,d,selB);else if(pickRow===1)selB=nT(selB,d,selA);else if(pickRow===2)diff=(diff+3+d)%3;}
-  if(ok){sfx('ok');if(pickRow<3)pickRow++;else{saveDiff();twoP=false;stage=2;mode='inst';instPage=0;timer=0;}}break;}
- case 'story':if(ok&&timer>10){timer=0;storyLine++;sfx('menu');if(storyLine>=STORY[stage].length){storyLine=0;if(stage>=LAST){mode='ending';}else{mode='overview';}}}break;
+  if(lfP()||rtP()){const d=lfP()?-1:1;sfx('menu');if(pickRow===0)selA=nT(selA,d,exhRand?-1:selB);else if(pickRow===1){const op=[-1,...[0,1,2,3,4,5,6,7].filter(i=>i!==selA)];let ix=op.indexOf(exhRand?-1:selB);ix=(ix+d+op.length)%op.length;exhRand=op[ix]<0;if(!exhRand)selB=op[ix];}else if(pickRow===2)diff=(diff+3+d)%3;}
+  if(ok){sfx('ok');if(pickRow<3)pickRow++;else{saveDiff();twoP=false;stage=2;if(exhRand){const c=[0,1,2,3,4,5,6,7].filter(i=>i!==selA&&i!==lastOpp),c2=c.length?c:[0,1,2,3,4,5,6,7].filter(i=>i!==selA);selB=pick(c2);}lastOpp=selB;mode='inst';instPage=0;timer=0;}}break;}
+ case 'story':if(ok&&timer>10){timer=0;storyLine++;sfx('menu');if(storyLine>=storyLines(stage).length){storyLine=0;if(stage>=LAST){mode='ending';}else{mode='overview';}}}break;
  case 'setbreak':stepFx();if(timer>220||(ok&&timer>40)){newSet();mode='play';timer=0;}break;
  case 'pick2p':if(lfP()){p2team=(p2team+4)%5+1;sfx('menu');}if(rtP()){p2team=p2team%5+1;sfx('menu');}if(ok||timer>600){sfx('ok');mode='inst';instPage=0;timer=0;}break;
  case 'inst':if(ok||timer>480){timer=0;instPage++;sfx('menu');if(instPage>2){mode=gm==='story'?'story':'overview';storyLine=0;timer=0;}}break;
@@ -703,7 +704,7 @@ function crowd(list,off,s,y0,rh,span,grey){const P=CRW[grey?0:1],hd=CRH[grey?0:1
  if(hype>0&&Math.sin(frame*0.25+f.ph)>0.3){g.fillRect(Math.round(x-4*s),yy-3*s,Math.ceil(s),Math.round(5*s));g.fillRect(Math.round(x+3*s),yy-3*s,Math.ceil(s),Math.round(5*s));}
  g.fillStyle=hd;g.fillRect(Math.round(x-2*s),yy-2*s,Math.round(4*s),Math.round(4*s));
  if(f.fl&&match&&!grey&&hype>0){const T=TEAMS[match.t[f.team]];g.globalAlpha=0.45;g.fillStyle=T.shirt;g.fillRect(Math.round(x+3*s),yy-7*s,Math.round(6*s),Math.round(3*s));g.globalAlpha=1;}}}
-function bannerSet(){const ia=match?match.t[0]:(gm==='story'?0:selA),ib=match?match.t[1]:(gm==='story'?Math.min(stage+1,LAST):selB),A=TEAMS[ia],B=TEAMS[ib],dk=c=>mixC(c,'#10141b',0.62),lt=c=>mixC(c,'#ffffff',0.25),SH_={t:'신인감독 김연경 시즌2',bg:'#1a1d28',fg:'#d08a50'};
+function bannerSet(){const ia=match?match.t[0]:(gm==='story'?0:selA),ib=match?match.t[1]:(gm==='story'?storyOpp():selB),A=TEAMS[ia],B=TEAMS[ib],dk=c=>mixC(c,'#10141b',0.62),lt=c=>mixC(c,'#ffffff',0.25),SH_={t:'신인감독 김연경 시즌2',bg:'#1a1d28',fg:'#d08a50'};
  return[{t:A.name,bg:dk(A.shirt),fg:lt(A.em[1]===A.shirt?'#ffffff':A.em[1])},{t:A.kr,bg:dk(A.shirt),fg:lt(A.em[1]===A.shirt?'#ffffff':A.em[1])},SH_,{t:B.name,bg:dk(B.shirt),fg:lt(B.em[1]===B.shirt?'#ffffff':B.em[1])},{t:B.kr,bg:dk(B.shirt),fg:lt(B.em[1]===B.shirt?'#ffffff':B.em[1])},SH_];}
 function fitText(ctx,t,x,y,maxW,fs,style){let f=fs;do{ctx.font=`${style} ${f}px Arial,"Malgun Gothic",sans-serif`;if(ctx.measureText(t).width<=maxW)break;f-=0.5;}while(f>4);ctx.fillText(t,x,y);}
 function boards(y,h,w,off,fs,i0){const BS=bannerSet(),N=BS.length,n=Math.floor(off/w);for(let i=-1;i<Math.ceil(SW/w)+2;i++){const x=Math.round(i*w-(off-n*w)),b=BS[((i+n+i0)%N+N)%N];
@@ -898,7 +899,7 @@ function screens(){
   else{const L=[['리시브:','볼이 떨어지는 곳(파란 화살표)으로 가기만 하면 됩니다.','(버튼은 사용하지 않습니다.)'],['토스:','자동입니다. 세터가 공격수에게 올려 줍니다.',''],['스파이크:','도움닫기·점프는 자동입니다.','타이밍 좋게 버튼을 눌러 치세요. (스틱으로 코스)'],['블로킹:','수비 때 네트 앞 선수로 버튼을 누르면 점프!','']];
    L.forEach((r,i)=>{const y=150+i*130;txt(r[0],80,y,'#ffe040',30);txt(r[1],260,y,'#fff',26);if(r[2])txt(r[2],260,y+40,'#fff',24);});}
   if(frame%50<35)txt('BUTTON = SKIP',W/2,720,'#fff',26,'center');}
- else if(mode==='overview'||mode==='intro'){const st=gm==='story',a=TEAMS[st?0:selA],b=TEAMS[st?Math.min(stage+1,LAST):selB],t=timer,ez=k=>{const v=Math.max(0,Math.min(1,(t-k)/24));return 1-Math.pow(1-v,3);};
+ else if(mode==='overview'||mode==='intro'){const st=gm==='story',a=TEAMS[st?0:selA],b=TEAMS[st?storyOpp():selB],t=timer,ez=k=>{const v=Math.max(0,Math.min(1,(t-k)/24));return 1-Math.pow(1-v,3);};
   M.fillStyle='#000';M.fillRect(0,0,W,H);{const zz=1+0.04*(1-ez(0));M.save();M.imageSmoothingEnabled=false;M.drawImage(arenaFor(a,b),W/2-W*zz/2,H/2-H*zz/2,W*zz,H*zz);M.restore();}
   M.fillStyle='rgba(4,8,20,0.25)';M.fillRect(0,0,W,H);
   const lab=st?ORD[stage]+' MATCH':(twoP?'2P VS MATCH':'EXHIBITION');M.fillStyle='rgba(6,10,24,0.8)';M.fillRect(0,124,W*ez(0),62);M.fillStyle='#f25a12';M.fillRect(0,124,W*ez(0),3);M.fillRect(0,183,W*ez(0),3);if(ez(0)>0.9)big(lab,W/2,155,46,'#ffffff','#ffd080');
@@ -908,10 +909,10 @@ function screens(){
   if(t>34){const s2=1+0.6*Math.max(0,1-(t-34)/12);M.save();M.translate(W/2,ya);M.scale(s2,s2);big('VS',0,0,80,'#fff','#ffe040');M.restore();}
   if(t>50){M.fillStyle='rgba(6,10,24,0.8)';M.fillRect(0,736,W,32);txt((st?'SCORE: '+score+'  ·  ':'')+`${SET_POINTS}점 세트 · ${SETS_TO_WIN}세트 선승 · 듀스 적용`,W/2,752,'#ffe040',20,'center');}
   if(t>40&&frame%40<26)txt('▼ BUTTON',W-20,752,'#fff',18,'right');}
- else if(mode==='pick'){blueBG();txt('팀 선택 경기 · 8 TEAMS',W/2,34,'#fff',34,'center');TEAMS.forEach((T,i)=>{const x=W/2-4*58+i*58;if(i===selA||i===selB){M.fillStyle=i===selA?'#ffe040':'#ff6060';M.fillRect(x-2,58,54,54);}drawEmblem(T.id,x+3,61,44,44);});const A=TEAMS[selA],B=TEAMS[selB],rowY=[470,525,580,650];
-  M.fillStyle='rgba(0,0,0,0.45)';M.fillRect(90,110,844,320);drawFlag(A.id,150,130,220,220);drawFlag(B.id,654,130,220,220);big('VS',W/2,250,60,'#fff','#ffe040');
-  txt(A.name,260,385,A.em?A.em[1]:'#fff',28,'center');txt(A.kr,260,416,'#fff',22,'center');txt(B.name,764,385,B.em?B.em[1]:'#fff',28,'center');txt(B.kr,764,416,'#fff',22,'center');
-  const rows=[['내 팀 (1P)','◀ '+A.kr+' ▶'],['상대 팀','◀ '+B.kr+' ▶'],['난이도','◀ '+DIFFN[diff]+' ▶'],['시작!','BUTTON']];
+ else if(mode==='pick'){blueBG();txt('팀 선택 경기 · 8 TEAMS',W/2,34,'#fff',34,'center');TEAMS.forEach((T,i)=>{const x=W/2-4*58+i*58;if(i===selA||(!exhRand&&i===selB)){M.fillStyle=i===selA?'#ffe040':'#ff6060';M.fillRect(x-2,58,54,54);}drawEmblem(T.id,x+3,61,44,44);});const A=TEAMS[selA],B=TEAMS[selB],rowY=[470,525,580,650];
+  M.fillStyle='rgba(0,0,0,0.45)';M.fillRect(90,110,844,320);drawFlag(A.id,150,130,220,220);if(exhRand){M.fillStyle='rgba(255,255,255,0.08)';M.fillRect(654,130,220,220);big('?',764,265,150,'#fff','#ff6060');}else drawFlag(B.id,654,130,220,220);big('VS',W/2,250,60,'#fff','#ffe040');
+  txt(A.name,260,385,A.em?A.em[1]:'#fff',28,'center');txt(A.kr,260,416,'#fff',22,'center');txt(exhRand?'RANDOM':B.name,764,385,exhRand?'#ff8080':B.em?B.em[1]:'#fff',28,'center');txt(exhRand?'랜덤 (매 경기 무작위)':B.kr,764,416,'#fff',22,'center');
+  const rows=[['내 팀 (1P)','◀ '+A.kr+' ▶'],['상대 팀','◀ '+(exhRand?'랜덤':B.kr)+' ▶'],['난이도','◀ '+DIFFN[diff]+' ▶'],['시작!','BUTTON']];
   rows.forEach((r,i)=>{const sel=pickRow===i,y=rowY[i];if(sel){M.fillStyle='rgba(255,224,64,0.18)';M.fillRect(220,y-24,584,46);}txt((sel?'▶ ':'  ')+r[0],250,y,sel?'#ffe040':'#c8d0f0',28);txt(r[1],780,y,sel?'#fff':'#8a9ad8',28,'right');});
   txt('↑↓ 항목 · ←→ 변경 · BUTTON 다음/시작',W/2,720,'#fff',22,'center');}
  else if(mode==='diff'){blueBG();M.fillStyle='rgba(0,0,0,0.5)';M.fillRect(212,150,600,440);big('난이도 선택',W/2,210,52,'#ffffff','#ffd080');txt('STORY MODE',W/2,260,'#ffe040',22,'center');
@@ -926,8 +927,8 @@ function screens(){
   else{const im=CUTS[S.cut];M.save();M.imageSmoothingEnabled=false;if(im&&im.complete)M.drawImage(im,70,100,450,Math.round(450*im.naturalHeight/im.naturalWidth));M.restore();M.strokeStyle='#fff';M.lineWidth=4;M.strokeRect(70,100,450,310);M.fillStyle='#1c2160';M.fillRect(70,412,200,40);txt('감독 김연경',84,433,'#ffe040',24);drawEmblem('WDG',640,120,260,260);}
   M.fillStyle='rgba(255,255,255,0.95)';M.fillRect(60,500,904,170);M.strokeStyle='#1c2160';M.lineWidth=6;M.strokeRect(60,500,904,170);
   line.slice(0,Math.floor(timer/1.5)).split('\n').forEach((l,i)=>txt(l,90,548+i*46,'#101830',32,'left','#ffffff'));if(frame%40<26)txt('▼ BUTTON',W/2,720,'#fff',22,'center');}
- else if(mode==='story'){M.fillStyle='#0a0f1e';M.fillRect(0,0,W,H);blueBG();M.fillStyle='rgba(4,8,20,0.78)';M.fillRect(0,0,W,H);const L=STORY[Math.min(stage,LAST)],line=L[storyLine]||'';
-  txt(stage>=LAST?'EPILOGUE · 우승':'STORY · '+ORD[stage]+' MATCH',40,50,'#ffe040',28);if(stage<LAST){const b=TEAMS[stage+1];drawFlag(b.id,820,30,150,150);txt('VS '+b.kr,895,200,'#fff',22,'center');}else drawEmblem('WDG',800,20,190,180);
+ else if(mode==='story'){M.fillStyle='#0a0f1e';M.fillRect(0,0,W,H);blueBG();M.fillStyle='rgba(4,8,20,0.78)';M.fillRect(0,0,W,H);const L=storyLines(Math.min(stage,LAST)),line=L[storyLine]||'';
+  txt(stage>=LAST?'EPILOGUE · 우승':'STORY · '+ORD[stage]+' MATCH',40,50,'#ffe040',28);if(stage<LAST){const b=TEAMS[storyOpp()];drawFlag(b.id,820,30,150,150);txt('VS '+b.kr,895,200,'#fff',22,'center');}else drawEmblem('WDG',800,20,190,180);
   {const im=CUTS[STORYF[Math.min(stage,LAST)][storyLine]||'timeout'];M.save();M.imageSmoothingEnabled=false;if(im&&im.complete)M.drawImage(im,70,150,450,Math.round(450*im.naturalHeight/im.naturalWidth));M.restore();M.strokeStyle='#fff';M.lineWidth=4;M.strokeRect(70,150,450,310);}
   M.fillStyle='#1c2160';M.fillRect(70,462,200,40);txt('감독 김연경',84,483,'#ffe040',24);
   M.fillStyle='rgba(255,255,255,0.95)';M.fillRect(60,520,904,170);M.strokeStyle='#1c2160';M.lineWidth=6;M.strokeRect(60,520,904,170);
