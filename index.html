@@ -88,17 +88,18 @@ const PRO_SLIDES=[
  {img:10,title:'원더독스, 다시 코트로.',sub:'WONDER DOGS'}];
 const STG_IMG=[10,14,11,15,13,9,9];
 function buildStory(st){
- if(st>=LAST)return[{img:10,spk:COACHN,text:'우승이에요!! 여러분이 해냈어요!'},{img:5,spk:COACHN,text:'처음 모였을 때 기억나요?\n언더독이 원더가 됐어요.'},{img:10,spk:COACHN,text:'이 정도면 구단주도 나타나겠죠?\n다음 시즌도 함께 가요!'},{img:1,text:'텅 비어 있던 코트에, 이제 함성이 가득하다.\n이야기는 이제부터 시작이다.'},{img:10,title:'원더독스',sub:'EPILOGUE · 우승'}];
+ const CK=(k,i)=>STORYF[Math.min(st,STORYF.length-1)][i%STORYF[Math.min(st,STORYF.length-1)].length];
+ if(st>=LAST)return[{cut:'matchwin',spk:COACHN,text:'우승이에요!! 여러분이 해냈어요!'},{img:5,text:'처음 손을 맞잡던 날.\n그날의 약속을 기억하나요?'},{cut:'goodplay',spk:COACHN,text:'처음 모였을 때 기억나요?\n언더독이 원더가 됐어요.'},{cut:'ace',spk:COACHN,text:'이 정도면 구단주도 나타나겠죠?\n다음 시즌도 함께 가요!'},{img:1,text:'텅 비어 있던 코트에, 이제 함성이 가득하다.\n이야기는 이제부터 시작이다.'},{img:10,title:'원더독스',sub:'EPILOGUE · 우승'}];
  const b=TEAMS[STORDER[st]],L=storyLines(st).slice(),A=[],im=STG_IMG[st];
  const last=st===LAST-1?L.pop():null;
  A.push({img:im,card:{kick:st===LAST-1?'FINAL':st===LAST-2?'SEMI-FINAL':'STAGE '+(st+1),id:b.id,name:b.kr,sub:b.name}});
- L.forEach((t,i)=>A.push({img:st===5&&i>0?12:im,spk:COACHN,text:t}));
- if(st===5)A.push({img:12,spk:COACHN,text:'여기서 이기면 결승이에요.\n한 점, 한 점 끝까지 가요.'});
- if(st===6){A.push({img:7,text:'눈을 감았다. 여기까지 온 길이 스쳐 지나간다.'});A.push({img:8,spk:COACHN,text:last});}
+ L.forEach((t,i)=>A.push({cut:CK(0,i),spk:COACHN,text:t}));
+ if(st===5)A.push({img:12,text:'여기서 이기면 결승이다.\n한 점, 한 점, 끝까지.'});
+ if(st===6){A.push({img:7,text:'눈을 감았다. 여기까지 온 길이 스쳐 지나간다.'});A.push({img:8,text:'다시 눈을 떴을 때, 두려움은 없었다.'});A.push({cut:'score',spk:COACHN,text:last});}
  return A;}
 let cine=null;
-function cineStart(key,arr,onEnd){cine={key,arr,i:0,t:0,prev:null,pt:0,fade:0,onEnd,hold:0};playSong('story');stImg(arr[0].img);if(arr[1])stImg(arr[1].img);}
-function cineGo(n){const c=cine,o=c.arr[c.i];c.prev=o.img;c.pt=c.t;c.i=n;c.t=0;c.fade=0;sfx('menu');const nx=c.arr[n+1];if(nx)stImg(nx.img);}
+function cineStart(key,arr,onEnd){cine={key,arr,i:0,t:0,prev:null,pt:0,fade:0,onEnd,hold:0};playSong('story');if(arr[0].img)stImg(arr[0].img);if(arr[1]&&arr[1].img)stImg(arr[1].img);}
+function cineGo(n){const c=cine,o=c.arr[c.i];c.prev=o.cut?'cut:'+o.cut:o.img;c.pt=c.t;c.i=n;c.t=0;c.fade=0;sfx('menu');const nx=c.arr[n+1];if(nx&&nx.img)stImg(nx.img);}
 function cineEnsure(){let k,arr,fn;
  if(mode==='prologue'){k='pro';arr=PRO_SLIDES;fn=()=>{mode='inst';instPage=0;timer=0;};}
  else{k='st'+stage;arr=null;fn=()=>{storyLine=0;if(stage>=LAST)mode='ending';else mode='overview';timer=0;};}
@@ -111,12 +112,17 @@ function cineUpdate(ok){cineEnsure();const c=cine,S=c.arr[c.i];c.t++;if(c.fade<1
  if(ok&&c.t>8){if(len&&typed<len)c.t=len*1.7+20;else if(c.i+1>=c.arr.length){const f=c.onEnd;cine=null;f();}else cineGo(c.i+1);}
  else if(!len&&!S.card&&!S.title&&c.t>240)ok=true;}
 const skipRect=[884,14,126,40];
-function kbDraw(k,t,idx,alpha){const im=stImg(k);if(!im.complete||!im.naturalWidth)return;const p=Math.min(1,t/520),rev=idx%2,z=1.03+0.11*(rev?1-p:p),dx=[-1,1,0,-1,1][idx%5],dy=[0,-0.6,1,0.5,-0.4][idx%5];
+function cutDraw(key,t,alpha){const im=CUTS[key];if(!im||!im.complete||!im.naturalWidth)return;const p=Math.min(1,t/400),z=1+0.05*p;
+ M.save();M.beginPath();M.rect(0,96,W,576);M.clip();M.globalAlpha=alpha;M.imageSmoothingEnabled=true;M.drawImage(im,-90,96,W+180,576);M.fillStyle='rgba(4,8,24,0.55)';M.fillRect(0,96,W,576);
+ const w=Math.round(im.naturalWidth*3),h=Math.round(im.naturalHeight*3),x=Math.round((W-w)/2),y=108;M.translate(W/2,y+h/2);M.scale(z,z);M.imageSmoothingEnabled=false;
+ M.fillStyle='#fff';M.fillRect(-w/2-6,-h/2-6,w+12,h+12);M.fillStyle='#1c2160';M.fillRect(-w/2-3,-h/2-3,w+6,h+6);M.drawImage(im,-w/2,-h/2,w,h);
+ M.restore();}
+function kbDraw(k,t,idx,alpha){if(typeof k==='string'){cutDraw(k.slice(4),t,alpha);return;}const im=stImg(k);if(!im.complete||!im.naturalWidth)return;const p=Math.min(1,t/520),rev=idx%2,z=1.03+0.11*(rev?1-p:p),dx=[-1,1,0,-1,1][idx%5],dy=[0,-0.6,1,0.5,-0.4][idx%5];
  M.save();M.beginPath();M.rect(0,96,W,576);M.clip();M.globalAlpha=alpha;M.imageSmoothingEnabled=true;M.imageSmoothingQuality='high';
  M.translate(W/2+dx*(z-1)*W/2*(rev?1-2*p:2*p-1)*0.9,384+dy*(z-1)*288*(rev?1-2*p:2*p-1)*0.9);M.scale(z,z);M.drawImage(im,-W/2,-288,W,576);M.restore();}
 function drawCine(){cineEnsure();const c=cine,S=c.arr[c.i];M.fillStyle='#000';M.fillRect(0,0,W,H);
  if(c.prev&&c.fade<1)kbDraw(c.prev,c.pt,c.i+1,1);
- kbDraw(S.img,c.t,c.i,c.prev?c.fade:Math.min(1,c.t/30));
+ kbDraw(S.cut?'cut:'+S.cut:S.img,c.t,c.i,c.prev?c.fade:Math.min(1,c.t/30));
  // letterbox
  M.fillStyle='#000';M.fillRect(0,0,W,96);M.fillRect(0,672,W,96);M.fillStyle='#f25a12';M.fillRect(0,94,W,2);M.fillRect(0,672,W,2);
  M.save();let g1=M.createLinearGradient(0,330,0,672);g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,'rgba(0,0,10,0.55)');M.fillStyle=g1;M.fillRect(0,330,W,342);M.restore();
@@ -1073,7 +1079,7 @@ function screens(){
   big(m.setNo+'세트 종료',W/2,170,80,'#ffffff','#ffe040');txt(TEAMS[m.t[w]].kr+' 세트 획득!',W/2,260,'#ffe040',36,'center');
   drawFlag(TEAMS[m.t[0]].id,170,300,150,150);drawFlag(TEAMS[m.t[1]].id,704,300,150,150);big(m.sets[0]+' - '+m.sets[1],W/2,380,120,'#fff','#b8a0ff');txt('세트 스코어',W/2,460,'#c8d0f0',24,'center');
   hst.forEach((h,i)=>txt(`${i+1}세트  ${h[0]} - ${h[1]}`,W/2,510+i*34,'#fff',24,'center'));txt('코트 체인지!  다음 세트 준비',W/2,700,'#40e0ff',28,'center');}
- else if(mode==='gameset'||mode==='continue'||mode==='gameover'){if(mode==='continue'){const im=stImg(6);if(im.complete&&im.naturalWidth){M.save();const z=1.02+Math.min(0.08,timer/6000);M.imageSmoothingEnabled=true;M.translate(W/2,384);M.scale(z,z);M.drawImage(im,-W/2,-288,W,576);M.restore();M.fillStyle='#000';M.fillRect(0,0,W,96);M.fillRect(0,672,W,96);}}M.fillStyle='rgba(0,0,0,0.55)';M.fillRect(0,0,W,H);const m=match;
+ else if(mode==='gameset'||mode==='continue'||mode==='gameover'){if(mode==='continue'){const im=stImg(6);if(im.complete&&im.naturalWidth){M.save();const z=1.02+Math.min(0.08,timer/6000);M.imageSmoothingEnabled=true;M.translate(W/2,384);M.scale(z,z);M.drawImage(im,-W/2,-288,W,576);M.restore();M.fillStyle='#000';M.fillRect(0,0,W,96);M.fillRect(0,672,W,96);}const ci=CUTS.mistake;if(ci&&ci.complete&&ci.naturalWidth){const w=Math.round(ci.naturalWidth*1.5),h=Math.round(ci.naturalHeight*1.5);M.save();M.imageSmoothingEnabled=false;M.fillStyle='#fff';M.fillRect(18,396,w+8,h+8);M.drawImage(ci,22,400,w,h);M.restore();}}M.fillStyle='rgba(0,0,0,0.55)';M.fillRect(0,0,W,H);const m=match;
   txt(TEAMS[m.t[0]].id,330,150,'#fff',44,'center');txt(TEAMS[m.t[1]].id,694,150,'#fff',44,'center');big(m.sets[0]+'-'+m.sets[1],W/2,270,170,'#ffffff','#b8a0ff');txt('세트 스코어  ('+m.setHist.map(h=>h[0]+'-'+h[1]).join(', ')+')',W/2,385,'#c8d0f0',22,'center');
   if(mode==='gameset'){const w=m.over;if(TEAMS[m.t[w]].id==='WDG')drawEmblem('WDG',W/2-80,500,160,150);txt(twoP?(PL(w)?'2P WIN!':'1P WIN!'):(w===m.p1?'YOU WIN!':'YOU LOST'),W/2,460,w===m.p1||twoP?'#ffe040':'#ff8080',44,'center');}
   if(mode==='continue'){M.fillStyle='rgba(6,10,28,0.85)';M.fillRect(60,622,904,50);txt(COACHN+': "그만두기 전엔 끝난 게 아니야."',W/2,647,'#ffe040',26,'center');txt('YOU LOST',W/2,440,'#fff',40,'center');txt('CONTINUE PLAY?',W/2,510,'#fff',40,'center');big(String(Math.max(0,9-Math.floor(timer/60))),W/2+240,500,140,'#ffffff','#c0c0ff');txt('PRESS BUTTON',W/2,600,'#ffe040',26,'center');}
