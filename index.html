@@ -41,13 +41,13 @@ function proj(x,h){return[SW/2+(x-cam.x)*KS,FLOORY-h*KS,KS];}
 // ===== TEAMS =====
 const TEAMS=[
  {id:'WDG',name:'WONDER DOGS',kr:'원더독스',shirt:'#f25a12',flame:'#c42a16',shorts:'#1c2160',trim:'#1c2160',pad:'#1c2160',vneck:true,logo:true,sleeve:false,band:false,em:['#1c2160','#f25a12','#ffffff'],hair:['#181412','#2a1a12','#121010'],skin:['#f0c08a','#e8b47c','#f2c898'],spd:4,jmp:3,pow:3,names:['한송희','이호빈','하효림','인쿠시','윤영인','채선아']},
- {id:'THK',name:'THUNDER HAWKS',kr:'썬더호크스',shirt:'#1f4fc8',shorts:'#f4f4f4',trim:'#ffd21a',sleeve:true,band:true,em:['#1f4fc8','#ffd21a','#ffffff'],glyph:'bolt',hair:['#151515','#2a1a10','#3a2414'],skin:['#f3c99a','#eabd8a','#f0c494'],spd:5,jmp:3,pow:2,names:['한유나','서지민','오하은','남윤희','배윤슬','임하솔']},
- {id:'CFX',name:'CRIMSON FOXES',kr:'크림슨폭스',shirt:'#c8202e',shorts:'#2a2a2e',trim:'#ffffff',sleeve:true,band:true,em:['#c8202e','#ffffff','#2a2a2e'],glyph:'fox',hair:['#6a4a2a','#2a1a10','#1a1a1a'],skin:['#f3cfa6','#e8b890','#d8a070'],spd:4,jmp:4,pow:3,names:['모가윤','신다현','권도아','홍세린','유보미','장아린']},
- {id:'JDR',name:'JADE DRAGONS',kr:'제이드드래곤즈',shirt:'#12905a',shorts:'#12905a',trim:'#f0c430',sleeve:true,band:true,em:['#0c6a42','#f0c430','#ffffff'],glyph:'wave',hair:['#1a1a1a','#5a3a1a','#2a1a10'],skin:['#f3cfa6','#c08860','#e8b890'],spd:3,jmp:4,pow:4,names:['고은비','양서진','송하연','전미래','구다인','황다슬']},
- {id:'STP',name:'STEEL PANTHERS',kr:'스틸팬서스',shirt:'#3a3f4a',shorts:'#16181e',trim:'#e04ad0',sleeve:true,band:true,em:['#16181e','#9aa2b2','#e04ad0'],glyph:'claw',hair:['#2a1a10','#111111','#4a2a10'],skin:['#c58c5c','#e0aa78','#f0c494'],spd:4,jmp:5,pow:4,names:['차지원','노은서','방예슬','탁수빈','변하늘','추민아']},
- {id:'SNT',name:'SUNSET TIGERS',kr:'선셋타이거즈',shirt:'#f0b81a',shorts:'#7a1e14',trim:'#7a1e14',sleeve:true,band:true,em:['#7a1e14','#f0b81a','#ffffff'],glyph:'sun',hair:['#141010','#2a1a10','#1a1412'],skin:['#c88a5a','#d89a68','#b87c50'],spd:5,jmp:4,pow:4,names:['라온비','도하윤','마예진','표서율','어지안','국하나']},
- {id:'NVS',name:'NOVA STARS',kr:'노바스타즈',shirt:'#18b8c8',shorts:'#20203a',trim:'#ff5aa0',sleeve:true,band:true,em:['#20203a','#18b8c8','#ff5aa0'],glyph:'star',hair:['#1a1a1a','#5a3020','#2a1a10'],skin:['#f3cfa6','#eabd8a','#f6d2b0'],spd:4,jmp:5,pow:5,names:['우다솜','제나연','함소이','왕채린','반도희','석유리']},
- {id:'RSW',name:'ROYAL SWANS',kr:'로열스완즈',shirt:'#f4f4f8',shorts:'#5a2a9a',trim:'#5a2a9a',sleeve:true,band:true,em:['#5a2a9a','#f4f4f8','#f0c430'],glyph:'crown',hair:['#b08040','#1a1a1a','#5a4030'],skin:['#f6d2b0','#f0c8a0','#f8dcc0'],spd:3,jmp:5,pow:5,names:['백설아','엄소담','소예나','길하람','명주희','진여울']}];
+ {id:'THK',lib:{name:'채하린',num:4,shirt:'#ffd21a',shorts:'#1f4fc8'},name:'THUNDER HAWKS',kr:'썬더호크스',shirt:'#1f4fc8',shorts:'#f4f4f4',trim:'#ffd21a',sleeve:true,band:true,em:['#1f4fc8','#ffd21a','#ffffff'],glyph:'bolt',hair:['#151515','#2a1a10','#3a2414'],skin:['#f3c99a','#eabd8a','#f0c494'],spd:5,jmp:3,pow:2,names:['한유나','서지민','오하은','남윤희','배윤슬','임하솔']},
+ {id:'CFX',lib:{name:'염다온',num:9,shirt:'#2e2e36',shorts:'#c8202e'},name:'CRIMSON FOXES',kr:'크림슨폭스',shirt:'#c8202e',shorts:'#2a2a2e',trim:'#ffffff',sleeve:true,band:true,em:['#c8202e','#ffffff','#2a2a2e'],glyph:'fox',hair:['#6a4a2a','#2a1a10','#1a1a1a'],skin:['#f3cfa6','#e8b890','#d8a070'],spd:4,jmp:4,pow:3,names:['모가윤','신다현','권도아','홍세린','유보미','장아린']},
+ {id:'JDR',lib:{name:'문세아',num:2,shirt:'#f0c430',shorts:'#0c6a42'},name:'JADE DRAGONS',kr:'제이드드래곤즈',shirt:'#12905a',shorts:'#12905a',trim:'#f0c430',sleeve:true,band:true,em:['#0c6a42','#f0c430','#ffffff'],glyph:'wave',hair:['#1a1a1a','#5a3a1a','#2a1a10'],skin:['#f3cfa6','#c08860','#e8b890'],spd:3,jmp:4,pow:4,names:['고은비','양서진','송하연','전미래','구다인','황다슬']},
+ {id:'STP',lib:{name:'곽나리',num:6,shirt:'#e04ad0',shorts:'#16181e'},name:'STEEL PANTHERS',kr:'스틸팬서스',shirt:'#3a3f4a',shorts:'#16181e',trim:'#e04ad0',sleeve:true,band:true,em:['#16181e','#9aa2b2','#e04ad0'],glyph:'claw',hair:['#2a1a10','#111111','#4a2a10'],skin:['#c58c5c','#e0aa78','#f0c494'],spd:4,jmp:5,pow:4,names:['차지원','노은서','방예슬','탁수빈','변하늘','추민아']},
+ {id:'SNT',lib:{name:'배지우',num:10,shirt:'#7a1e14',shorts:'#f0b81a'},name:'SUNSET TIGERS',kr:'선셋타이거즈',shirt:'#f0b81a',shorts:'#7a1e14',trim:'#7a1e14',sleeve:true,band:true,em:['#7a1e14','#f0b81a','#ffffff'],glyph:'sun',hair:['#141010','#2a1a10','#1a1412'],skin:['#c88a5a','#d89a68','#b87c50'],spd:5,jmp:4,pow:4,names:['라온비','도하윤','마예진','표서율','어지안','국하나']},
+ {id:'NVS',lib:{name:'탁소이',num:12,shirt:'#ff5aa0',shorts:'#20203a'},name:'NOVA STARS',kr:'노바스타즈',shirt:'#18b8c8',shorts:'#20203a',trim:'#ff5aa0',sleeve:true,band:true,em:['#20203a','#18b8c8','#ff5aa0'],glyph:'star',hair:['#1a1a1a','#5a3020','#2a1a10'],skin:['#f3cfa6','#eabd8a','#f6d2b0'],spd:4,jmp:5,pow:5,names:['우다솜','제나연','함소이','왕채린','반도희','석유리']},
+ {id:'RSW',lib:{name:'피아름',num:15,shirt:'#5a2a9a',shorts:'#f4f4f8'},name:'ROYAL SWANS',kr:'로열스완즈',shirt:'#f4f4f8',shorts:'#5a2a9a',trim:'#5a2a9a',sleeve:true,band:true,em:['#5a2a9a','#f4f4f8','#f0c430'],glyph:'crown',hair:['#b08040','#1a1a1a','#5a4030'],skin:['#f6d2b0','#f0c8a0','#f8dcc0'],spd:3,jmp:5,pow:5,names:['백설아','엄소담','소예나','길하람','명주희','진여울']}];
 const TFLAV={1:['썬더호크스는 빠른 팀이에요.\n리시브부터 침착하게!'],2:['크림슨폭스는 블로킹이 영리한 팀이에요.\n코스를 보고 때리세요.'],3:['제이드드래곤즈는 수비가 끈질겨요.\n마지막 공까지 포기하지 마세요!'],
  4:['스틸팬서스는 강서브가 무기예요.\n그 서브만 버티면 기회가 와요.'],5:['선셋타이거즈는 해외 원정팀이에요.\n빠르고 탄력이 좋으니 높이 싸움에서 밀리지 마세요!'],6:['노바스타즈는 신생 구단, 우리처럼 처음부터 시작한 팀이에요.\n그래서 더 지면 안 돼요!'],7:['로열스완즈는 리그 최강이라 불리는 팀이에요.\n하지만 우리는 원더독스예요.']};
 let STORDER=[1,2,3,4,5,6,7];
@@ -238,7 +238,7 @@ const WD_ROSTER=[{num:1,name:'한송희',pos:'OH'},{num:2,name:'하효림',pos:'
 function wdLineup(){const n=(match&&match.setNo||1)-1,G=k=>WD_ROSTER.filter(r=>r.pos===k),OH=G('OH'),S=G('S'),MB=G('MB'),OP=G('OPP');
  const oh=i=>OH[(n*2+i)%OH.length];return[oh(0),MB[n%MB.length],S[n%S.length],oh(1),n%2===0&&OP.length?OP[0]:oh(2),WD_LIBERO[n%WD_LIBERO.length]];}
 const HOMEX=[220,65,25,45,120,170],RECVX=[230,80,28,55,120,175];
-function mkP(t,i,T){const WL=T.id==='WDG'?wdLineup()[i]:null;return{team:t,idx:i,T,name:WL?WL.name:T.names[i],num:WL?WL.num:[1,3,5,7,8,11][i],x:0,h:0,vx:0,vh:0,mx:0,dir:t?-1:1,state:'ground',act:null,runT:0,swing:0,dive:0,blk:false,canDig:true,
+function mkP(t,i,T){const WL=T.id==='WDG'?wdLineup()[i]:null,RL=i===5&&T.lib?T.lib:null;return{team:t,idx:i,T,lib:i===5,name:WL?WL.name:RL?RL.name:T.names[i],num:WL?WL.num:RL?RL.num:[1,3,5,7,8,11][i],x:0,h:0,vx:0,vh:0,mx:0,dir:t?-1:1,state:'ground',act:null,runT:0,swing:0,dive:0,blk:false,canDig:true,
  skin:T.skin[i%3],hair:T.hair[i%3],spd:1.75+T.spd*0.12,jv:3.25+T.jmp*0.1,st:{spike:0,ace:0,block:0}};}
 function newMatch(a,b,h0,h1,demo){match={t:[a,b],human:[h0,h1],score:[0,0],sets:[0,0],setNo:1,setOver:-1,setHist:[],p1:0,ctl:[0,1],server:Math.random()<0.5?0:1,demo,time:0,over:-1,sudden:false};
  players=[];rot=[[],[]];for(let t=0;t<2;t++)for(let i=0;i<6;i++){const p=mkP(t,i,TEAMS[match.t[t]]);players.push(p);rot[t].push(p);}
@@ -250,6 +250,7 @@ const DK=()=>[{spd:0.85,err:1.5,blk:-0.12,spk:-0.15,pow:-0.12,dig:-0.1,bskip:0.6
 function diffFor(t){const r=diffFor0(t);if(!r)return r;const k=DK(),c=v=>Math.max(0,Math.min(1,v));return{spd:r.spd*k.spd,err:r.err*k.err,reach:r.reach,block:c(r.block+k.blk),spike:c(r.spike+k.spk),dig:c(r.dig+k.dig),power:c(r.power+k.pow)};}
 function diffFor0(t){if(!isHum(t)&&isHum(1-t)){const s=stage;return{spd:0.85+s*0.06,err:26-s*4,reach:16+s,block:0.2+s*0.09,spike:0.6+s*0.08,dig:0.35+s*0.07,power:0.15+s*0.12};}
  return{spd:1,err:10,reach:20,block:0.5,spike:0.92,dig:0.42,power:0.35};}
+function fixLibero(t){const a=rot[t],li=a.findIndex(q=>q.lib);if(li>=0&&li<=3){const j=li===0?5:li<=3?5:5;const q=a[j];a[j]=a[li];a[li]=q;if(li===0){}}}
 function act(p,n,d){p.act={n,t:0,d};if(n!=='land')p.la=n+':'+(p.serveKind||'');}
 function sayIt(s){say={s,t:0};}
 function setupServe(){const t=match.server,s=sgnT(t);if(isHum(t)){cutQ=[];cutCur=null;}
@@ -295,7 +296,7 @@ function point(team,txt,isFault,kind){if(rallyEnd>0||!match)return;
   if(ck&&(ck!=='score'&&ck!=='pointlost'||Math.random()<0.7))cutin('coach',ck,{d:84,label:'감독 김연경',line:pick(COACHL[ck])});}
  if(wdScored&&!who)sayIt(txt+'  원더독스 득점!');
  popup=who&&isHum(who.team)&&!cutQ.some(c=>c.kind!=='ref')&&Math.random()<0.6?{type:'stat',p:who,t:0,d:150}:null;
- if(m.server!==team){rot[team].push(rot[team].shift());m.server=team;}
+ if(m.server!==team){rot[team].push(rot[team].shift());fixLibero(team);m.server=team;}
  rot[team].forEach(p=>{if(p.h===0&&p.state==='ground')act(p,'celebrate',110);});rot[o].forEach(p=>{if(p.h===0&&p.state==='ground')act(p,'sad',110);});
  if(m.score[team]>=SET_POINTS&&m.score[team]-m.score[o]>=WIN_BY){m.sets[team]++;m.setHist.push([...m.score]);if(m.sets[team]>=SETS_TO_WIN)m.over=team;else{m.setOver=team;say.s+=`\n${m.setNo}세트 종료! ${TEAMS[m.t[team]].kr} 세트 획득.`;}}
  else{const lead=m.score[team]>m.score[o]?team:m.score[o]>m.score[team]?o:-1;
@@ -323,17 +324,17 @@ function hitFx(big,col){parts.push({x:ball.x,h:ball.h,type:'ring',life:14,max:14
 function pass(p,err,weak){if(!touchReg(p))return;const t=p.team,s=sgnT(t),mt=ball.touches,pl=plan[t],arr=rot[t],e=()=>rnd(-err,err);
  if(mt===1){pl.setter=arr[2]!==p?arr[2]:arr[3];pl.tried=false;pl.noSpike=false;sayIt(`${p.name}의 리시브.`);
   launchPeak(s*24+e()*0.7,weak?rnd(80,95):rnd(105,122));act(p,'bump',14);sfx('bump');}
- else if(mt===2){if(!isHum(t)&&Math.random()<0.015){fault(t,'캐치볼! (홀딩)');return;}const c=[arr[1],arr[3],arr[4]].filter(q=>q!==p);pl.attacker=pick(c.slice(0,2));pl.tried=false;
+ else if(mt===2){if(!isHum(t)&&Math.random()<0.015){fault(t,'캐치볼! (홀딩)');return;}const c=[arr[1],arr[3],arr[4]].filter(q=>q!==p&&!q.lib);pl.attacker=pick(c.slice(0,2));pl.tried=false;
   pl.quick=Math.random()<0.25;ball.quick=pl.quick;const D=diffFor(t);pl.noSpike=isHum(t)?false:Math.random()>D.spike;
   launchPeak(s*(pl.quick?22:28)+e()*0.3,pl.quick?rnd(96,104):rnd(120,132));act(p,'set',14);sfx('set');sayIt(pl.quick?'시간차 공격!':`토스! ${pl.attacker.name}.`);}
  else{launchPeak(-s*rnd(80,230),rnd(100,115));act(p,'bump',14);sfx('bump');}
  hitFx(false,'#ffffff');}
-function jump(p,vx){if(p.h>0||p.state!=='ground')return;p.vh=p.jv;p.vx=vx;p.state='air';p.h=0.01;sfx('jump');puff(p.x,0,4,'#d8f0e0',0.8);}
+function jump(p,vx){if(p.lib)return;if(p.h>0||p.state!=='ground')return;p.vh=p.jv;p.vx=vx;p.state='air';p.h=0.01;sfx('jump');puff(p.x,0,4,'#d8f0e0',0.8);}
 function dive(p){const dx=ball.x-p.x;p.state='dive';p.dive=36;p.dcc=0;p.vx=Math.sign(dx)*3.4;p.dir=dx>=0?1:-1;act(p,'dive',36);sfx('dive');puff(p.x,0,8,'#d8f0e0',1.2);}
 function diveContact(p){if(p.state!=='dive'||!ball.live||p.dive<12||side(ball.x)!==p.team||ball.h>18)return;
  if(Math.abs(ball.x-(p.x+p.dir*10))<17){p.dive=11;p.dcc=1;stats.digs++;sayIt(`나이스 디그! ${p.name}.`);if(p.team===wdSideOf()&&!cutCur&&!cutQ.length){pcut(p,'goodplay',60);coachReact('clap');}pass(p,14,true);}}
 function spikeReach(p,win){return side(ball.x)===p.team&&ball.lastP!==p&&Math.abs(ball.x-(p.x+p.dir*4))<14+win*0.3&&Math.abs(ball.h-(p.h+54))<win;}
-function spike(p,ax,q,human){if(!touchReg(p))return;const t=p.team,o=-sgnT(t);stats.spikes++;
+function spike(p,ax,q,human){if(p.lib)return;if(!touchReg(p))return;const t=p.team,o=-sgnT(t);stats.spikes++;
  const tx=o*(ax<0?rnd(30,80):ax>0?rnd(180,255):rnd(90,180));
  fastShot(tx,6+p.T.pow*0.4+q*1.8,human?q>0.3:true);ball.spiked=1;ball.bchk=false;ball.quick=plan[t].quick;plan[t].tried=true;
  const dp=diffFor(1-t).dig;rot[1-t].forEach(r=>r.canDig=Math.random()<dp-q*0.15);
@@ -414,7 +415,7 @@ function chooseCtrl(t){const cur=ctrlP[t];if(cur&&(cur.h>0||cur.state==='dive'))
   else if(side(ball.x)!==t){let bd=1e9;[arr[1],arr[2],arr[3]].forEach(p=>{if(Math.abs(p.x)<bd){bd=Math.abs(p.x);n=p;}});}}
  ctrlP[t]=n;}
 function humanCtl(p,c,t){const mt=myTouch(t),attacking=ball.live&&mt>=1&&side(ball.x)===t&&p===plan[t].attacker;
- if(c.bP)p.swing=14;
+ if(c.bP&&p.lib){if(!(p.lmsg>0)){sayIt('L 리베로는 공격 불가');p.lmsg=60;}}else if(c.bP)p.swing=14;if(p.lmsg>0)p.lmsg--;
  if(!attacking&&p.state==='ground'&&p.h===0){const mx=(c.r?1:0)-(c.l?1:0);if(mx){const sp=p.spd*1.1;p.x+=mx*sp;p.mx=mx*sp;}
   if(c.bP&&ball.live&&side(ball.x)!==t&&Math.abs(p.x)<40)jump(p,0);}
  if(!attacking&&canBump(p,(ball.spiked&&ball.lastTeam!==t?15:22)+DK().bump)&&ball.h<34)pass(p,6);
@@ -426,6 +427,7 @@ function physP(p){const s=sgnT(p.team);
  else if(p.h>0||p.vh>0){p.h+=p.vh;p.vh-=G;p.x+=p.vx;p.vx*=0.93;if(s*p.x<3){if(isHum(p.team)&&ctrlP[p.team]===p&&ball.live&&rallyEnd===0)fault(p.team,'네트 터치!');p.x=s*3;}
   if(p.h<=0){p.h=0;p.vh=0;p.vx=0;p.state='ground';act(p,'land',8);puff(p.x,0,5,'#d8f0e0');}}
  if(p.state==='ground')p.x=s<0?clamp(p.x,-300,-6):clamp(p.x,6,300);
+ if(p.lib&&p.state==='ground'&&s*p.x<45)p.x=s*45;
  if(Math.abs(p.mx)>0.2&&p.state==='ground')p.runT++;p.mx*=0.5;
  if(p.act){p.act.t++;if(p.act.t>=p.act.d)p.act=null;}}
 function updateBall(){if(ball.held)return;const px=ball.x;ball.x+=ball.vx;ball.h+=ball.vh;ball.vh-=G;ball.spin+=Math.abs(ball.vx)*0.08+0.03;
@@ -661,7 +663,8 @@ function teamSprites(T){if(SPRS.team[T.id])return SPRS.team[T.id];if(!SPRS.ready
  for(const k in SPRS.raw)o[k]=recolor(SPRS.raw[k],T,false);o.sad_={idle_1:recolor(SPRS.raw.idle_1,T,true)};
  return SPRS.team[T.id]=o;}
 const LIB_T={id:'WDL',shirt:'#1c3a8c',shorts:'#232d5a'};
-const isLib=p=>p.T.id==='WDG'&&(p.num===12||p.num===7);
+const isLib=p=>!!p.lib;
+const libT=T=>T.id==='WDG'?LIB_T:(T.libT||(T.libT={id:T.id+'L',shirt:T.lib.shirt,shorts:T.lib.shorts}));
 function newAnim(p){const A=p.act,n=A?A.n:null,t=A?A.t:0,air=p.h>0.5,sk=p.serveKind==='spike',la=p.la||'',sv=(typeof serv!=='undefined'&&serv&&serv.p===p)?serv:null;
  if(typeof mode!=='undefined'&&match&&p.state==='ground'&&!air&&((mode==='gameset'&&match.over===p.team)||(mode==='setbreak'&&match.setOver===p.team)))return'victory_'+(Math.floor(frame/7)%4+1);
  if(n==='celebrate')return'victory_'+(Math.floor(t/7)%4+1);
@@ -699,12 +702,13 @@ function outlineOf(img,col){let m=OLC.get(img);if(!m){m={};OLC.set(img,m);}if(m[
   if(!n1&&!n2)continue;const i=((Y+2)*(w+4)+X+2)*4;if(n1){D[i]=255;D[i+1]=255;D[i+2]=255;D[i+3]=255;}else{D[i]=rgb[0];D[i+1]=rgb[1];D[i+2]=rgb[2];D[i+3]=200;}}
  x.putImageData(o,0,0);return m[col]=c;}
 function drawGuy(p,ox,oy,ks){let sx,sy,k;if(ox!==undefined){sx=ox;sy=oy;k=ks*1.1;}else{const r=proj(p.x,p.h);sx=r[0];sy=r[1];k=r[2];}
- const set=isLib(p)?teamSprites(LIB_T):teamSprites(p.T);if(!set){const{c,hop}=spriteFor(p);blitSprite(c,sx,sy-hop*k,k,p.dir);return;}
+ const set=isLib(p)?teamSprites(libT(p.T)):teamSprites(p.T);if(!set){const{c,hop}=spriteFor(p);blitSprite(c,sx,sy-hop*k,k,p.dir);return;}
  let f=frameOf(p),img,meta,dy=0;if(f.startsWith('sad:')){const h=f.slice(4);img=set.sad_[h];meta=SPR_META[h];dy=2;}else{img=set[f];meta=SPR_META[f];}
  const hop=p.act&&p.act.n==='celebrate'&&!f.startsWith('victory_')?Math.abs(Math.sin(p.act.t*0.22))*7*k:0,s=k/KS;
  g.save();g.imageSmoothingEnabled=false;g.translate(Math.round(sx),Math.round(sy-hop+dy+1));if((f.startsWith('run_')?(p.rfd||p.dir):p.dir)<0)g.scale(-1,1);
  if(match&&!match.demo&&isHum(p.team)&&ctrlP[p.team]===p){const ol=outlineOf(img,PL(p.team)&&twoP?'#40e0ff':'#ffe840'),a=0.7+0.3*Math.abs(Math.sin(frame*0.18));g.globalAlpha=a;g.drawImage(ol,Math.round(-meta[2]*s)-2,Math.round(-meta[1]*s)-2,Math.round(meta[0]*s)+4,Math.round(meta[1]*s)+4);g.globalAlpha=1;}
- g.drawImage(img,Math.round(-meta[2]*s),Math.round(-meta[1]*s),Math.round(meta[0]*s),Math.round(meta[1]*s));g.restore();}
+ g.drawImage(img,Math.round(-meta[2]*s),Math.round(-meta[1]*s),Math.round(meta[0]*s),Math.round(meta[1]*s));g.restore();
+ if(p.lib){const lx=Math.round(sx),ly=Math.round(sy-(meta[1]*k/KS)-6);g.save();g.fillStyle=p.T.id==='WDG'?'#1c3a8c':p.T.lib.shirt;g.fillRect(lx-5,ly-9,10,10);g.strokeStyle='#fff';g.lineWidth=1;g.strokeRect(lx-5,ly-9,10,10);g.fillStyle=(p.T.id!=='WDG'&&/^#(f|e)/i.test(p.T.lib.shirt))?'#111':'#fff';g.font='bold 9px sans-serif';g.textAlign='center';g.fillText('L',lx,ly-1);g.restore();}}
 // ===== HEAD COACH (sideline) =====
 const COACH={name:'김연경',T:{id:'COACH',shirt:'#18181c',trim:'#f2f2f2',shorts:'#141418',pants:'#141418',shoe:'#202024',sleeve:true,collar:true,logo:true},skin:'#f0c69a',hair:'#141210',react:null,rt:0,idx:0};
 function coachPose(){const r=COACH.react,t=COACH.rt,br=Math.sin(frame*0.05)*0.4;
@@ -767,7 +771,7 @@ function pxPortrait(key,o){if(portCache.has(key))return portCache.get(key);
  const ey=29;[[22,ey],[33,ey]].forEach(([X,Y])=>{x.fillStyle='#ffffff';x.fillRect(X-1,Y,4,3);x.fillStyle='#1a1018';x.fillRect(X,Y,2,3);px(X,Y,'#ffffff');x.fillStyle=HRt[0];x.fillRect(X-1,Y-3,4,1);});
  x.fillStyle=SK[1];x.fillRect(28,32,1,3);px(27,35,SK[1]);x.fillStyle='#a04848';x.fillRect(26,38,5,1);px(27,39,'#c06060');px(28,39,'#c06060');
  portCache.set(key,c);return c;}
-function pixelPortrait(p){const T=p.T;return pxPortrait('p|'+T.id+'|'+p.idx,{skin:p.skin,hair:p.hair,shirt:T.shirt,trim:T.trim,flame:T.flame,sty:p.idx%3,band:T.band,logo:T.logo});}
+function pixelPortrait(p){const T=p.T;return pxPortrait('p|'+T.id+'|'+p.idx+(p.lib?'L':''),{skin:p.skin,hair:p.hair,shirt:p.lib&&T.lib?T.lib.shirt:T.shirt,trim:T.trim,flame:T.flame,sty:p.idx%3,band:T.band,logo:T.logo});}
 function coachPortrait(){return pxPortrait('coach',{skin:COACH.skin,hair:COACH.hair,shirt:'#18181c',trim:'#f2f2f2',sty:3,collar:true,logo:true});}
 // ===== RENDER: SCENE (512x384, upscaled 2x) =====
 function A_open(p){return p.act&&(p.act.n==='celebrate'||p.act.n==='spike');}
